@@ -9,7 +9,9 @@ export function cloudConfig(env, origin) {
     VAULT_MAX_SELECTION: integer(50, 1, 100),
     VAULT_FETCH_TIMEOUT_MS: integer(10000, 1000, 30000),
     VAULT_REGISTRY_HOSTS: z.string().default("ui.shadcn.com,magicui.design,motion-primitives.com,raw.githubusercontent.com"),
-    VAULT_SYNC_BATCH_SIZE: integer(5, 1, 10),
+    VAULT_SYNC_BATCH_SIZE: integer(3, 1, 10),
+    VAULT_SYNC_MAX_COMMITS: integer(30, 1, 100),
+    VAULT_SYNC_TIMEOUT_MS: integer(90000, 10000, 100000),
     VAULT_LOCAL_DEV: z.enum(["true", "false"]).default("false"),
   }).parse(env)
   return {
@@ -20,6 +22,8 @@ export function cloudConfig(env, origin) {
     fetchTimeout: values.VAULT_FETCH_TIMEOUT_MS,
     registryHosts: values.VAULT_REGISTRY_HOSTS.split(",").map(value => value.trim()).filter(Boolean),
     syncBatchSize: values.VAULT_SYNC_BATCH_SIZE,
+    syncMaxCommits: values.VAULT_SYNC_MAX_COMMITS,
+    syncTimeout: values.VAULT_SYNC_TIMEOUT_MS,
     localDev: values.VAULT_LOCAL_DEV === "true",
   }
 }

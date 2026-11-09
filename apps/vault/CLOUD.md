@@ -22,11 +22,11 @@ GitHub Actions 使用仓库 Secret `VAULT_SITE_SERVICE_TOKEN` 保存服务凭据
 
 工作流位于 `.github/workflows/vault-sync.yml`，每周一、三、五、周日 UTC 00:00 执行，对应北京时间 08:00。GitHub 排队可能使实际开始时间延迟，也支持 Actions 页面手动执行。
 
-每轮检查 shadcn-ui/ui、magicuidesign/magicui 和 ibelick/motion-primitives 的组件目录，核对当前 MIT 许可并记录仓库星数，收集最新变更提交中每来源最多 5 个 TSX 组件。每轮处理最多 30 个候选。此范围为有界采集，尚未实现所有历史变更的无遗漏回补。
+每轮检查 shadcn-ui/ui、magicuidesign/magicui 和 ibelick/motion-primitives 的组件目录，核对当前 MIT 许可并记录仓库星数。固定本轮提交快照，按最近修改顺序分页向前查找，每来源目标新增 3 个 TSX 组件。按组件标识及来源路径识别已收录组件，跳过后继续补足，源码版本变化也跳过已有组件。每来源默认最多扫描 30 个提交，单轮采集总时限默认 90 秒，达到上限时明确报告未补足。
 
 候选组件经过隔离编译、Chromium 渲染和运行异常检查后，上传压缩预览并入库，再读取保存的版本校验内容。无法编译、缺少参数或不支持的依赖留在候选区，工作流返回失败以提供可见提醒。该检查无法替代所有业务交互和视觉质量评审。
 
-自动更新只作用于系统托管且未被用户修改的组件。用户编辑过的组件保留现状，候选中记录冲突。组件集保持创建时的固定版本。
+已有组件在采集和发布入口均跳过。候选编译或渲染失败时记录原因并继续向前补采，单次 Actions 最多验证 30 个候选。运行汇总显示各来源实际新增和缺口，来源耗尽、扫描受限或验证名额耗尽导致不足时工作流返回失败。组件集保持创建时的固定版本。
 
 在 Actions 中查看运行日志，在 `/api/sync/status` 或站点 MCP 工具中查看采集与候选概况。运行日志不包含服务凭据。
 
@@ -40,7 +40,9 @@ GitHub Actions 使用仓库 Secret `VAULT_SITE_SERVICE_TOKEN` 保存服务凭据
 | VAULT_MAX_PAGE_SIZE | 48 | 12—100，服务端列表页大小上限 |
 | VAULT_MAX_SELECTION | 50 | 1—100，单次选择数量上限 |
 | VAULT_FETCH_TIMEOUT_MS | 10000 | 1000—30000 毫秒，单次来源读取超时 |
-| VAULT_SYNC_BATCH_SIZE | 5 | 1—10，每来源候选数和候选页大小 |
+| VAULT_SYNC_BATCH_SIZE | 3 | 1—10，每来源每轮新增目标及候选页大小 |
+| VAULT_SYNC_MAX_COMMITS | 30 | 1—100，每来源扫描提交数上限 |
+| VAULT_SYNC_TIMEOUT_MS | 90000 | 10000—100000 毫秒，单轮采集总时限 |
 | VAULT_REGISTRY_HOSTS | ui.shadcn.com,magicui.design,motion-primitives.com,raw.githubusercontent.com | Registry HTTPS 域名白名单，重定向逐跳检查 |
 | VAULT_LOCAL_DEV | false | 仅本地 Worker 测试设为 true，线上保持 false |
 | GITHUB_TOKEN | 无 | 可选服务端 Secret，提高 GitHub 来源 API 配额 |

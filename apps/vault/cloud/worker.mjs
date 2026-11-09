@@ -81,12 +81,18 @@ async function route(request, env, config) {
   }
   if (path === "/mcp") return handleMcp(body, store, config, env)
   if (path === "/api/sync/run" && request.method === "POST") {
-    const input = z.object({ githubToken: z.string().min(20).max(1000).optional() }).parse(body)
+    const input = z.object({
+      githubToken: z.string().min(20).max(1000).optional(),
+      sourceLimits: z.record(z.enum(["shadcn-ui/ui", "magicuidesign/magicui", "ibelick/motion-primitives"]), z.number().int().min(0).max(config.syncBatchSize)).optional(),
+      excludeCandidateIds: z.array(z.string().min(1).max(500)).max(30).optional(),
+    }).parse(body)
     // Actions 临时只读凭据仅用于本次公开来源访问，不保存到数据库或日志。
-    return json(await syncSources(store, config, { ...env, GITHUB_TOKEN: input.githubToken || env.GITHUB_TOKEN }))
+    return json(await syncSources(store, config, { ...env, GITHUB_TOKEN: input.githubToken || env.GITHUB_TOKEN }, input))
   }
   if (path === "/api/sync/publish" && request.method === "POST") return json(await publishCandidate(body, store, config, env))
   if (path === "/api/sync/candidates" && request.method === "GET") {
+    const ids = z.array(z.string().min(1).max(500)).max(30).parse(url.searchParams.getAll("id"))
+    if (ids.length) return json({ items: (await store.statement(`SELECT id,document FROM sync_candidates WHERE id IN (${ids.map(() => "?").join(",")}) ORDER BY updated_at DESC,id`, ...ids).all()).results })
     const after = z.string().max(500).default("").parse(url.searchParams.get("after") || undefined)
     return json({ items: (await store.statement("SELECT id,document FROM sync_candidates WHERE (status IN ('pending','failed') OR (status='imported' AND json_extract(document,'$.demo')='')) AND id>? ORDER BY id LIMIT ?", after, config.syncBatchSize).all()).results })
   }
