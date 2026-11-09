@@ -6,7 +6,8 @@ Docker 版使用 React、Vite、Express 与 SQLite。ChatGPT Sites 版使用 Wor
 
 ## 功能
 
-- 管理员密码登录，HttpOnly 会话与只读 Agent Token。
+- 账号密码登录，管理员与访客角色，HttpOnly 会话与只读 Agent Token。
+- 账号与安全后台，用户创建、角色调整、启用禁用、重置密码和分页登录日志。
 - React / TypeScript 与 HTML / CSS 组件管理，支持多套组件、分类、搜索和分页。
 - 粘贴代码、带清单的 ZIP、已发布 Registry JSON 导入。
 - 隔离实时预览，React / Tailwind 编译；可编辑入口、演示与依赖。
@@ -25,7 +26,7 @@ npm ci
 npm run dev
 ```
 
-打开 <http://localhost:4310>，输入 `.env` 中的管理员密码。空库可以手动加载四个 MIT 示例。所有示例均为本应用演示组件，其中表格数据为虚构示例。
+打开 <http://localhost:4310>，输入账号 `admin`（可通过 `VAULT_ADMIN_USERNAME` 配置）和 `.env` 中的初始化管理员密码。空库可以手动加载四个 MIT 示例。所有示例均为本应用演示组件，其中表格数据为虚构示例。
 
 ```bash
 npm run check
@@ -47,7 +48,7 @@ docker compose ps
 
 默认映射 `127.0.0.1:4310 → 容器 4310`，适合在宿主机通过已有 HTTPS 反向代理访问。反向代理保留 Host，转发到 `http://127.0.0.1:4310`。域名示例为 `https://ui.example.com` 时，设置 `VAULT_ORIGIN=https://ui.example.com`，以启用 Secure Cookie。
 
-需要局域网直接访问时，在 `.env` 配置 `VAULT_BIND_IP=0.0.0.0`、`VAULT_PUBLIC_PORT=4310`，并将 `VAULT_ORIGIN` 改为真实的 `http://服务器地址:4310`。端口、地址和密码变更后执行 `docker compose up -d --force-recreate`。个人组件库应通过受控网络或 HTTPS 访问。
+需要局域网直接访问时，在 `.env` 配置 `VAULT_BIND_IP=0.0.0.0`、`VAULT_PUBLIC_PORT=4310`，并将 `VAULT_ORIGIN` 改为真实的 `http://服务器地址:4310`。端口、地址配置变更后执行 `docker compose up -d --force-recreate`。个人组件库应通过受控网络或 HTTPS 访问。
 
 首次构建需联网下载基础镜像及 npm 依赖。运行阶段的页面、字体、预览及示例使用本地资源。远程 Registry 导入是主动联网操作。
 
@@ -57,7 +58,11 @@ SQLite 文件位于本地 `data/vault.sqlite`，容器中位于 `/app/data`，�
 
 备份前停止应用，再备份完整数据目录或数据卷，完成后启动。不要只复制运行中的主 SQLite 文件，WAL 中可能仍有已提交数据。恢复时使用同一版本应用和完整数据卷。升级先备份，再构建新镜像。应用启动时检查数据库版本。
 
-修改管理员密码会使浏览器会话失效。Agent Token 独立管理，需要在“Agent 访问”中撤销。
+首次启动会在数据库创建管理员，原组件与组件集继续保留，升级后需要重新登录。`VAULT_PASSWORD` 仅用于初始化，之后在“账号与安全”中修改密码。修改密码、管理员重置密码、调整角色或禁用用户会撤销相关会话。至少保留一名可用管理员。
+
+管理员可维护组件与组件集、管理账号和 Token、查看登录日志。访客可浏览、预览及导出。账号由管理员创建，第三方登录暂未启用，配置说明见 `OAUTH.md`。
+
+账号、加盐密码派生值、会话摘要和登录日志持久化在 SQLite，云端对应 D1。日志记录时间、账号、结果、原因、截断浏览器信息与 HMAC 地址标识，默认保留90天、最多10000条，在认证操作时分批清理。Agent Token 独立管理，需要在“Agent 访问”中撤销。
 
 ## 导入 ZIP
 
@@ -111,4 +116,4 @@ React 预览需要纯客户端组件和正确的 demo，服务器组件、Next.j
 - 根目录 LICENSE 为上游 MIT 许可证，导出包附组件各自的许可信息。
 - 配置说明及范围见 `.env.example` 与 `server/config.mjs`，环境变量优先。
 - 预览编译在受限 Worker 中进行， iframe 使用不含 `allow-same-origin` 的 sandbox 及 CSP。
-- 当前版本为单管理员私有库。组件、源码、合集和只读接口均要求认证。
+- 当前版本为共享组件库，支持管理员与访客角色。组件、源码、合集和只读接口均要求认证。账号间共享同一组件库。

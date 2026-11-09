@@ -1083,6 +1083,282 @@ summary {
   font-size: 11px;
   color: #8b9390;
 }
+.login-form .login-help {
+  margin: 0;
+  font-size: 12px;
+}
+.oauth-login {
+  display: grid;
+  gap: 12px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 12px;
+}
+.oauth-login > div {
+  display: flex;
+  gap: 10px;
+}
+.oauth-button {
+  flex: 1;
+  border: 1px solid #dadde0;
+  border-radius: 6px;
+  padding: 11px;
+  background: white;
+  color: #292c2f;
+  text-decoration: none;
+  font-size: 13px;
+}
+.oauth-button:hover {
+  background: #f4f5f5;
+}
+.account-settings {
+  min-width: 0;
+}
+.account-tabs {
+  margin-bottom: 28px;
+  overflow-x: auto;
+}
+.account-tabs button {
+  white-space: nowrap;
+}
+/* 账号页两列均分可用宽度，间距沿用 24px。用户与日志列表占满同一内容边界。 */
+.account-profile {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+.account-section,
+.account-editor {
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  min-width: 0;
+}
+.account-section h2,
+.account-editor h2 {
+  font-size: 16px;
+}
+.account-facts {
+  margin: 22px 0 0;
+  font-size: 13px;
+}
+.account-facts > div {
+  display: grid;
+  grid-template-columns: 90px minmax(0, 1fr);
+  gap: 12px;
+  padding: 13px 0;
+  border-top: 1px solid var(--line);
+  line-height: 1.6;
+}
+.account-facts dt {
+  color: var(--muted);
+}
+.account-facts dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.account-password-form {
+  max-width: 440px;
+}
+.account-password-form > .primary {
+  align-self: flex-start;
+}
+.account-toolbar,
+.account-section-heading,
+.account-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.account-toolbar {
+  margin-bottom: 20px;
+}
+.account-toolbar > .primary {
+  flex-shrink: 0;
+}
+.account-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  max-width: 460px;
+  flex: 1;
+}
+.account-search > svg {
+  flex-shrink: 0;
+  color: var(--muted);
+}
+.account-search > input {
+  width: 100%;
+}
+.account-search > button {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.account-editor {
+  margin: 0 0 24px;
+  background: #fafbfb;
+}
+.account-section-heading {
+  margin-bottom: 18px;
+}
+.account-user-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px 24px;
+}
+.account-form-foot {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 16px;
+}
+.account-actions {
+  justify-content: flex-end;
+}
+.account-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border-top: 1px solid var(--line);
+}
+.account-table {
+  width: 100%;
+  min-width: 700px;
+  border-collapse: collapse;
+  font-size: 12px;
+  text-align: left;
+  line-height: 1.6;
+  font-variant-numeric: tabular-nums;
+}
+.account-table th {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 400;
+}
+.account-table td,
+.account-table th {
+  padding: 14px 12px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+.account-table td:first-child,
+.account-table th:first-child {
+  padding-left: 0;
+}
+.account-table td:last-child,
+.account-table th:last-child {
+  padding-right: 0;
+}
+.account-table strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+.account-table small {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+}
+.account-row-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+.account-row-actions button {
+  padding: 5px 9px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.account-table th:last-child {
+  text-align: right;
+}
+.account-table.login-log-table th:last-child {
+  text-align: left;
+}
+.login-log-table {
+  table-layout: fixed;
+  min-width: 920px;
+}
+.login-log-table th:nth-child(1),
+.login-log-table th:nth-child(2) {
+  width: 160px;
+}
+.login-log-table th:nth-child(3) {
+  width: 260px;
+}
+.login-log-table th:nth-child(4) {
+  width: 150px;
+}
+.login-log-table th:nth-child(5) {
+  width: 190px;
+}
+.account-user-agent {
+  display: block;
+  max-width: 190px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.account-table .account-empty,
+.account-empty {
+  color: var(--muted);
+  padding: 28px 0;
+  font-size: 13px;
+}
+.account-table .account-disabled,
+.account-result.failure {
+  color: #a53535;
+}
+.account-result.success {
+  color: #246b54;
+}
+.account-pagination {
+  margin-top: 18px;
+}
+@media (max-width: 1100px) {
+  .account-profile {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 640px) {
+  .account-section,
+  .account-editor {
+    padding: 18px 14px;
+  }
+  .account-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .account-toolbar > button {
+    align-self: flex-start;
+  }
+  .account-user-form {
+    grid-template-columns: 1fr;
+  }
+  .account-table {
+    min-width: 650px;
+  }
+  .account-table.login-log-table {
+    min-width: 920px;
+  }
+  .account-table th:first-child,
+  .account-table td:first-child {
+    position: sticky;
+    left: 0;
+    background: white;
+    max-width: 160px;
+    min-width: 130px;
+  }
+  .account-pagination {
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+  .account-tabs {
+    gap: 16px;
+  }
+}
 /* 1440px 画布为 1216px，内边距 64px，三列共享 40px 间距，余量均分。 */
 @media (min-width: 1650px) {
   .component-grid {

@@ -9,6 +9,7 @@
     "build": "vite build && node scripts/build-parser.mjs",
     "start": "node --env-file-if-exists=.env server/index.mjs --production",
     "check": "tsc --noEmit",
+    "pretest": "node scripts/build-parser.mjs && node scripts/build-catalog.mjs",
     "test": "node --test --test-concurrency=1 test/*.test.mjs",
     "build:sites": "node scripts/build-parser.mjs && node scripts/build-sites.mjs"
   },

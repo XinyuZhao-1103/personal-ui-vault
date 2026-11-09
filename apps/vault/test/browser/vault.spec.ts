@@ -6,12 +6,15 @@ test("导入、真实预览、多选、组件集与两种导出", async ({ page 
   const errors: string[] = []
   page.on("pageerror", (e) => errors.push(e.message))
   await page.goto("/")
-  await page.getByLabel("管理员密码").fill("browser-test-password-123")
+  await page.getByLabel("账号", { exact: true }).fill("admin")
+  await page
+    .getByLabel("密码", { exact: true })
+    .fill("browser-test-password-123")
   await page.getByRole("button", { name: "进入组件库" }).click()
   await expect(
     page.getByRole("heading", { name: "组件库", exact: true }),
   ).toBeVisible()
-  await page.getByRole("button", { name: "加载 4 个示例" }).click()
+  await page.getByRole("button", { name: "添加内置示例", exact: true }).click()
   await expect(page.locator(".component-card")).toHaveCount(4)
   await expect(page.locator(".mini-preview iframe")).toHaveCount(4, {
     timeout: 20000,

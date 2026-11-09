@@ -1,5 +1,6 @@
 import path from "node:path"
 import { z } from "zod"
+import { identityConfig } from "./identity-config.mjs"
 
 const integer = (fallback, min, max) =>
   z.coerce.number().int().min(min).max(max).default(fallback)
@@ -35,6 +36,7 @@ export function loadConfig(env = process.env) {
   )
     throw new Error("VAULT_ORIGIN 必须为不带路径和末尾斜杠的 HTTP(S) 来源")
   return {
+    ...identityConfig(env, origin.origin),
     password: v.VAULT_PASSWORD,
     origin: origin.origin,
     secureCookie: origin.protocol === "https:",

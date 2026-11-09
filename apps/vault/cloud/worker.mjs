@@ -6,6 +6,8 @@ import { planExport, promptFor, exportZip } from "../server/exporter.mjs"
 import { examples } from "../server/examples.mjs"
 import { cloudConfig } from "./config.mjs"
 import { cloudStore } from "./store.mjs"
+import { createIdentity } from "../server/identity.mjs"
+import { authorizeVault } from "../server/access.mjs"
 import { handleMcp, syncSources, publishCandidate, documentHash } from "./sync.mjs"
 import catalog from "../generated/cloud-catalog.json" with { type: "json" }
 
@@ -31,12 +33,16 @@ async function route(request, env, config) {
   const url = new URL(request.url)
   const path = url.pathname
   const store = cloudStore(env.DB)
-  const user = request.headers.get("oai-authenticated-user-id")
-  const local = config.localDev && ["localhost", "127.0.0.1"].includes(url.hostname)
-  // 生产环境由 Sites 私有访问策略保护，浏览器写入仍强制要求平台身份。
-  // 服务更新仅开放固定的 MCP/同步接口，平台服务凭据由 Dispatch 验证。
+  const identity = createIdentity({ db: env.DB, config })
+  await identity.ensureBootstrap()
+  const authResponse = await identity.handle(request)
+  if (authResponse) return authResponse
+  const user = await identity.getSession(request)
   const servicePath = path === "/mcp" || path.startsWith("/api/sync/") || path === "/api/catalog/bootstrap"
-  const browserIdentity = !!user || local
+  const browserIdentity = user?.role === "admin"
+  // Dispatch 会消费其服务头，因此应用层使用独立头再次验证服务密钥。
+  const serviceHeader = request.headers.get("x-vault-service-token")
+  const serviceAuthorized = !!(servicePath && config.serviceToken && serviceHeader && await hash(serviceHeader) === await hash(config.serviceToken))
   let readerToken = false
   const bearer = request.headers.get("authorization")?.match(/^Bearer (.+)$/)?.[1]
   if (bearer && request.method === "GET")
@@ -45,9 +51,8 @@ async function route(request, env, config) {
     await store.statement("SELECT 1 FROM components LIMIT 1").all()
     return json({ status: "ok", version: "0.2.0", runtime: "sites" })
   }
-  if (path === "/api/session") return json({ authenticated: browserIdentity, runtime: "sites", limits: { maxBytes: config.maxBytes, maxSelection: config.maxSelection, maxPageSize: config.maxPageSize } })
-  if (!browserIdentity && !readerToken && !servicePath) throw new AppError("请使用 ChatGPT 登录", 401)
-  if (!["GET", "HEAD"].includes(request.method) && !servicePath && request.headers.get("origin") !== url.origin)
+  if (!serviceAuthorized) authorizeVault(user, path, request.method, readerToken)
+  if (!["GET", "HEAD"].includes(request.method) && !serviceAuthorized && request.headers.get("origin") !== url.origin)
     throw new AppError("请求来源不匹配", 403)
   let body = {}
   if (!["GET", "HEAD"].includes(request.method)) {
@@ -192,12 +197,17 @@ export default {
     const requestId = crypto.randomUUID()
     try {
       const url = new URL(request.url)
-      if (url.pathname === "/api/logout") {
-        if (request.method !== "POST" || request.headers.get("origin") !== url.origin) throw new AppError("请求来源不匹配", 403)
-        return json({ success: true, redirect: "/signout-with-chatgpt?return_to=/" })
+      if (url.pathname.startsWith("/previews/")) {
+        const config = cloudConfig(env, url.origin)
+        const identity = createIdentity({ db: env.DB, config })
+        authorizeVault(await identity.getSession(request), "/api/components", "GET")
+        const response = await env.ASSETS.fetch(request)
+        const headers = new Headers(response.headers)
+        headers.set("Cache-Control", "no-store")
+        return new Response(response.body, { status: response.status, headers })
       }
       if (!url.pathname.startsWith("/api/") && url.pathname !== "/mcp") return env.ASSETS.fetch(request)
-      const response = await route(request, env, cloudConfig(env))
+      const response = await route(request, env, cloudConfig(env, url.origin))
       response.headers.set("Cache-Control", "no-store")
       response.headers.set("X-Content-Type-Options", "nosniff")
       response.headers.set("X-Request-Id", requestId)

@@ -1,12 +1,9 @@
 import express from "express"
-import {
-  randomBytes,
-  createHash,
-  scrypt,
-  scryptSync,
-  timingSafeEqual,
-} from "node:crypto"
-import { promisify } from "node:util"
+import { randomBytes, createHash } from "node:crypto"
+import { readFileSync } from "node:fs"
+import { createIdentity } from "./identity.mjs"
+import { identityDatabase } from "./identity-db.mjs"
+import { authorizeVault } from "./access.mjs"
 import { fileURLToPath } from "node:url"
 import path from "node:path"
 import { z } from "zod"
@@ -22,26 +19,13 @@ import { archiveTask } from "./tasks.mjs"
 const config = loadConfig()
 const store = openStore(config.dataDir)
 const app = express()
-const derive = promisify(scrypt)
 const hash = (value) => createHash("sha256").update(value).digest("hex")
-const salt = "21st-self-hosted-vault-admin-v1"
-const passwordHash = scryptSync(config.password, salt, 64)
-store.db.exec(
-  "CREATE TABLE IF NOT EXISTS settings(key TEXT PRIMARY KEY,value TEXT NOT NULL); CREATE TABLE IF NOT EXISTS api_tokens(id TEXT PRIMARY KEY, token_hash TEXT UNIQUE NOT NULL, name TEXT NOT NULL, created_at TEXT NOT NULL);",
-)
-const previous = store.db
-  .prepare("SELECT value FROM settings WHERE key='password_hash'")
-  .get()
-if (previous?.value !== passwordHash.toString("hex")) {
-  store.transaction(() => {
-    store.db.exec("DELETE FROM sessions")
-    store.db
-      .prepare("INSERT OR REPLACE INTO settings VALUES('password_hash',?)")
-      .run(passwordHash.toString("hex"))
-  })
-}
+store.db.exec("CREATE TABLE IF NOT EXISTS api_tokens(id TEXT PRIMARY KEY, token_hash TEXT UNIQUE NOT NULL, name TEXT NOT NULL, created_at TEXT NOT NULL)")
+store.db.exec(readFileSync(new URL("../drizzle/0001_identity.sql", import.meta.url), "utf8").replaceAll("--> statement-breakpoint", ""))
+const identity = createIdentity({ db: identityDatabase(store.db), config })
+await identity.ensureBootstrap()
 const asyncRoute = (fn) => (req, res, next) =>
-  Promise.resolve(fn(req, res)).catch(next)
+  Promise.resolve(fn(req, res, next)).catch(next)
 app.disable("x-powered-by")
 app.use((req, res, next) => {
   req.requestId = randomBytes(8).toString("hex")
@@ -67,104 +51,36 @@ app.use(
   express.raw({ type: "application/zip", limit: config.maxBytes }),
 )
 app.use(express.json({ limit: config.maxBytes }))
-function session(req) {
-  const cookie = (req.headers.cookie || "")
-    .split(";")
-    .map((p) => p.trim())
-    .find((p) => p.startsWith("vault_session="))
-    ?.slice(14)
-  if (!cookie) return false
-  return !!store.db
-    .prepare(
-      "SELECT token_hash FROM sessions WHERE token_hash=? AND expires_at>?",
-    )
-    .get(hash(cookie), Date.now())
-}
 app.get("/api/health", (_req, res) => {
   store.db.prepare("SELECT 1").get()
   res.json({ status: "ok", version: "0.1.0" })
 })
-app.get("/api/session", (req, res) =>
-  res.json({
-    authenticated: session(req),
-    limits: {
-      maxBytes: config.maxBytes,
-      maxSelection: config.maxSelection,
-      maxPageSize: config.maxPageSize,
-    },
-  }),
-)
-const attempts = new Map()
-app.post(
-  "/api/login",
-  asyncRoute(async (req, res) => {
-    const ip = req.socket.remoteAddress || "unknown"
-    const now = Date.now()
-    for (const [key, value] of attempts)
-      if (value.expires < now) attempts.delete(key)
-    if (attempts.size > 10000) throw new AppError("登录繁忙，请稍后重试", 429)
-    const attempt = attempts.get(ip) || { count: 0, expires: now + 300000 }
-    if (attempt.count >= 10)
-      throw new AppError("登录尝试过多，请 5 分钟后重试", 429)
-    attempt.count++
-    attempts.set(ip, attempt)
-    const parsed = z
-      .object({ password: z.string().max(256) })
-      .safeParse(req.body)
-    if (!parsed.success) throw new AppError("密码格式无效")
-    const candidate = await derive(parsed.data.password, salt, 64)
-    if (!timingSafeEqual(candidate, passwordHash))
-      throw new AppError("密码不正确", 401)
-    attempts.delete(ip)
-    const token = randomBytes(32).toString("hex")
-    store.db.prepare("DELETE FROM sessions WHERE expires_at<?").run(now)
-    if (store.db.prepare("SELECT count(*) AS n FROM sessions").get().n >= 100)
-      store.db
-        .prepare(
-          "DELETE FROM sessions WHERE token_hash IN (SELECT token_hash FROM sessions ORDER BY expires_at LIMIT 1)",
-        )
-        .run()
-    store.db
-      .prepare("INSERT INTO sessions VALUES(?,?)")
-      .run(hash(token), now + 86400000)
-    res.cookie("vault_session", token, {
-      httpOnly: true,
-      secure: config.secureCookie,
-      sameSite: "strict",
-      maxAge: 86400000,
-      path: "/",
-    })
-    res.json({ success: true })
-  }),
-)
-app.use("/api", (req, res, next) => {
-  if (session(req)) return next()
-  const bearer = req.headers.authorization?.startsWith("Bearer ")
-    ? req.headers.authorization.slice(7)
-    : ""
-  if (
-    req.method === "GET" &&
-    bearer &&
-    store.db
-      .prepare("SELECT id FROM api_tokens WHERE token_hash=?")
-      .get(hash(bearer))
-  )
-    return next()
-  res.status(401).json({ error: "请先登录", requestId: req.requestId })
-})
-app.post("/api/logout", (req, res) => {
-  const cookie = (req.headers.cookie || "")
-    .split(";")
-    .map((p) => p.trim())
-    .find((p) => p.startsWith("vault_session="))
-    ?.slice(14)
-  if (cookie)
-    store.db
-      .prepare("DELETE FROM sessions WHERE token_hash=?")
-      .run(hash(cookie))
-  res.clearCookie("vault_session", { path: "/" })
-  res.json({ success: true })
-})
+// 认证核心只接收套接字地址，忽略客户端伪造的转发头。
+app.use(asyncRoute(async (req, res, next) => {
+  if (!req.path.startsWith("/api/")) return next()
+  const headers = new Headers()
+  for (const name of ["cookie", "origin", "content-type"])
+    if (req.headers[name]) headers.set(name, String(req.headers[name]))
+  headers.set("cf-connecting-ip", req.socket.remoteAddress || "unknown")
+  headers.set("user-agent", String(req.headers["user-agent"] || "").slice(0, 500))
+  const authPath = req.path === "/api/session" || req.path === "/api/login" || req.path === "/api/logout" || req.path.startsWith("/api/account/") || req.path.startsWith("/api/admin/") || req.path.startsWith("/api/auth/")
+  const request = new Request(new URL(req.originalUrl, config.origin), {
+    method: req.method,
+    headers,
+    ...(authPath && !["GET", "HEAD"].includes(req.method) ? { body: JSON.stringify(req.body || {}) } : {}),
+  })
+  const response = await identity.handle(request)
+  if (response) {
+    res.status(response.status)
+    for (const [name, value] of response.headers) res.setHeader(name, value)
+    return res.send(Buffer.from(await response.arrayBuffer()))
+  }
+  const user = await identity.getSession(request)
+  const bearer = req.headers.authorization?.match(/^Bearer (.+)$/)?.[1]
+  const readerToken = !!(req.method === "GET" && bearer && store.db.prepare("SELECT id FROM api_tokens WHERE token_hash=?").get(hash(bearer)))
+  authorizeVault(user, req.path, req.method, readerToken)
+  next()
+}))
 app.get("/api/components", (req, res) => {
   const query = z
     .object({

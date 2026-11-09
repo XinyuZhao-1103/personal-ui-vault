@@ -1,21 +1,12 @@
 import { build as bundle } from "esbuild"
 import { build as viteBuild } from "vite"
-import { mkdir, readFile, writeFile, readdir, copyFile } from "node:fs/promises"
+import { mkdir, readFile, writeFile, copyFile } from "node:fs/promises"
 import path from "node:path"
 import { makePreview } from "../server/preview.mjs"
-import { validateComponent } from "../server/model.mjs"
+import "./build-catalog.mjs"
 
 const output = path.resolve("dist-sites")
-const documents = []
-for (const entry of await readdir("catalog", { withFileTypes: true })) {
-  if (!entry.isDirectory()) continue
-  const meta = JSON.parse(await readFile(`catalog/${entry.name}/component.json`, "utf8"))
-  const files = []
-  for (const file of meta.files) files.push({ path: file, content: await readFile(`catalog/${entry.name}/${file}`, "utf8") })
-  documents.push(validateComponent({ ...meta, files }, 1048576))
-}
-await mkdir("generated", { recursive: true })
-await writeFile("generated/cloud-catalog.json", JSON.stringify({ documents, sources: JSON.parse(await readFile("catalog/sources.json", "utf8")) }))
+const { documents } = JSON.parse(await readFile("generated/cloud-catalog.json", "utf8"))
 await viteBuild({ build: { outDir: `${output}/client`, emptyOutDir: true } })
 await mkdir(`${output}/client/compiler/deps`, { recursive: true })
 await mkdir(`${output}/server`, { recursive: true })
@@ -47,5 +38,5 @@ for (const doc of documents) {
 }
 const manifest = JSON.parse(await readFile(".openai/hosting.json", "utf8"))
 await writeFile(`${output}/.openai/hosting.json`, JSON.stringify(manifest, null, 2))
-await writeFile(`${output}/server/wrangler.json`, JSON.stringify({ name: "personal-ui-vault", main: "index.js", compatibility_date: "2026-05-15", compatibility_flags: ["nodejs_compat"], assets: { directory: "../client", binding: "ASSETS", not_found_handling: "single-page-application", run_worker_first: ["/api/*", "/mcp"] }, d1_databases: [{ binding: "DB", database_name: "personal-ui-vault", database_id: "local-vault-db", migrations_dir: "../../drizzle" }], r2_buckets: [{ binding: "BUCKET", bucket_name: "personal-ui-vault-files" }] }, null, 2))
+await writeFile(`${output}/server/wrangler.json`, JSON.stringify({ name: "personal-ui-vault", main: "index.js", compatibility_date: "2026-05-15", compatibility_flags: ["nodejs_compat"], assets: { directory: "../client", binding: "ASSETS", not_found_handling: "single-page-application", run_worker_first: ["/api/*", "/mcp", "/previews/*"] }, d1_databases: [{ binding: "DB", database_name: "personal-ui-vault", database_id: "local-vault-db", migrations_dir: "../../drizzle" }], r2_buckets: [{ binding: "BUCKET", bucket_name: "personal-ui-vault-files" }] }, null, 2))
 console.log(`Sites 构建完成，包含 ${documents.length} 个已编译组件`)

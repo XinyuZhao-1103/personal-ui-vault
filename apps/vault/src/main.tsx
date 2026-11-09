@@ -24,8 +24,18 @@ import {
   X,
 } from "lucide-react"
 import "./style.css"
+import {
+  AccountSettings,
+  type AccountSession,
+  type AccountUser,
+  type LoginProvider,
+} from "./auth-admin"
 
-type FileEntry = { path: string; content: string; encoding?: "utf8" | "base64" }
+type FileEntry = {
+  path: string
+  content: string
+  encoding?: "utf8" | "base64"
+}
 type ComponentDoc = {
   id: string
   revision: number
@@ -76,6 +86,8 @@ async function request<T>(url: string, options: RequestInit = {}): Promise<T> {
         : { "Content-Type": "application/json", ...options.headers },
   })
   if (!response.ok) {
+    if (response.status === 401 && url !== "/api/login")
+      window.dispatchEvent(new Event("vault-session-expired"))
     let error
     try {
       error = await response.json()
@@ -267,7 +279,7 @@ function Detail({
 }: {
   doc: ComponentDoc
   onClose: () => void
-  onEdit: () => void
+  onEdit?: () => void
   selectedRevision?: number
   onSelect: (document: ComponentDoc) => void
 }) {
@@ -316,7 +328,7 @@ function Detail({
             ))}
           </select>
         </label>
-        <button onClick={onEdit}>编辑新版本</button>
+        {onEdit && <button onClick={onEdit}>编辑新版本</button>}
         <button
           className={selected ? "button selected" : "button primary"}
           onClick={() => onSelect(shown)}
@@ -984,6 +996,9 @@ function App() {
     return () => window.removeEventListener("keydown", focusSearch)
   }, [])
   const [authenticated, setAuthenticated] = useState<boolean | null>(null)
+  const [user, setUser] = useState<AccountUser | null>(null)
+  const [providers, setProviders] = useState<LoginProvider[]>([])
+  const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [loginError, setLoginError] = useState("")
   const [loginBusy, setLoginBusy] = useState(false)
@@ -1010,14 +1025,30 @@ function App() {
   const [loading, setLoading] = useState(false)
   const [refreshKey, setRefreshKey] = useState(0)
   useEffect(() => {
-    request<{ authenticated: boolean; limits: { maxSelection: number } }>(
-      "/api/session",
-    )
+    request<AccountSession>("/api/session")
       .then((v) => {
         setAuthenticated(v.authenticated)
+        setUser(v.user)
+        setProviders(v.providers || [])
         setMaxSelection(v.limits.maxSelection)
       })
-      .catch((e) => setLoginError(e.message))
+      .catch((e) => {
+        setAuthenticated(false)
+        setLoginError(e.message)
+      })
+  }, [])
+  useEffect(() => {
+    const expire = () => {
+      setAuthenticated(false)
+      setUser(null)
+      setSelected(new Map())
+      setDetail(null)
+      setModal("")
+      setView("library")
+      setLoginError("登录已失效，请重新登录。")
+    }
+    window.addEventListener("vault-session-expired", expire)
+    return () => window.removeEventListener("vault-session-expired", expire)
   }, [])
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -1067,8 +1098,14 @@ function App() {
     setLoginError("")
     setLoginBusy(true)
     try {
-      await post("/api/login", { password })
-      setAuthenticated(true)
+      await post("/api/login", { username, password })
+      const session = await request<AccountSession>("/api/session")
+      if (!session.authenticated || !session.user)
+        throw new Error("登录会话未建立，请重试。")
+      setUser(session.user)
+      setProviders(session.providers || [])
+      setMaxSelection(session.limits.maxSelection)
+      setAuthenticated(session.authenticated)
       setPassword("")
     } catch (e) {
       setLoginError((e as Error).message)
@@ -1173,6 +1210,19 @@ function App() {
     setModal("")
     setEditing(undefined)
   }
+  function signedOut() {
+    setAuthenticated(false)
+    setUser(null)
+    setSelected(new Map())
+    setItems([])
+    setKits([])
+    setDetail(null)
+    setModal("")
+    setView("library")
+    setError("")
+    setNotice("")
+  }
+  const isAdmin = user?.role === "admin"
   if (!authenticated)
     return (
       <div className="login-page">
@@ -1181,14 +1231,29 @@ function App() {
           <span>拾 UI</span>
         </div>
         <form className="login-form" onSubmit={login}>
-          <h1>把好设计，留给下一次。</h1>
-          <p>收集喜欢的组件，预览、挑选，交给 Agent。</p>
+          <div>
+            <span className="eyebrow">拾 UI · 组件工作空间</span>
+            <h1>登录拾 UI</h1>
+          </div>
+          <p>把好设计，留给下一次。使用网站账号进入组件库。</p>
           <label>
-            管理员密码
+            账号
             <input
               autoFocus
+              required
+              minLength={3}
+              maxLength={64}
+              autoComplete="username"
+              value={username}
+              onChange={(event) => setUsername(event.target.value)}
+            />
+          </label>
+          <label>
+            密码
+            <input
               type="password"
               required
+              maxLength={256}
               autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -1206,9 +1271,28 @@ function App() {
                 : "进入组件库"}
             <ArrowRight size={16} />
           </button>
+          {providers.length > 0 && (
+            <div className="oauth-login">
+              <span>或使用第三方账号</span>
+              <div>
+                {providers.map((provider) => (
+                  <a
+                    className="oauth-button"
+                    key={provider.id}
+                    href={`/api/auth/${encodeURIComponent(provider.id)}/start`}
+                  >
+                    {provider.name}
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+          <p className="login-help">
+            账号由管理员创建。如忘记密码，请联系管理员重置。
+          </p>
           <small>
             <ShieldCheck size={14} />
-            自托管 · 私有存储 · 源码属于你
+            独立账号登录 · 按身份授权访问
           </small>
         </form>
         <footer>基于 21st.dev 开源项目构建</footer>
@@ -1226,8 +1310,12 @@ function App() {
         <div className="workspace">
           <span className="workspace-mark">UI</span>
           <div>
-            <strong>我的设计资产</strong>
-            <small>私有工作空间</small>
+            <strong>
+              {user?.displayName || user?.username || "拾 UI 用户"}
+            </strong>
+            <small>
+              {isAdmin ? "管理员 · 维护与管理" : "访客 · 浏览与导出"}
+            </small>
           </div>
           <ShieldCheck size={15} />
         </div>
@@ -1278,16 +1366,18 @@ function App() {
           ))}
         </nav>
         <div className="sidebar-bottom">
-          <button onClick={() => setModal("settings")}>
+          <button
+            className={view === "account" ? "active" : ""}
+            onClick={() => setView("account")}
+          >
             <Settings2 size={17} />
-            Agent 访问
+            账号与安全
           </button>
           <button
             onClick={async () => {
               try {
                 await post("/api/logout", {})
-                setAuthenticated(false)
-                setSelected(new Map())
+                signedOut()
               } catch (e) {
                 setError((e as Error).message)
               }
@@ -1303,20 +1393,22 @@ function App() {
         <header className="topbar">
           <span>
             我的工作空间 <ChevronRight size={13} />{" "}
-            {view === "kits"
-              ? "组件集"
-              : view === "selected"
-                ? "当前选择"
-                : "组件库"}
+            {view === "account"
+              ? "账号与安全"
+              : view === "kits"
+                ? "组件集"
+                : view === "selected"
+                  ? "当前选择"
+                  : "组件库"}
           </span>
           <span className="private-label">
             <span className="status-dot" />
-            私有部署
+            {isAdmin ? "管理员" : "访客"}
           </span>
           <div className="mobile-tools">
             <button
-              aria-label="打开 Agent 访问"
-              onClick={() => setModal("settings")}
+              aria-label="打开账号与安全"
+              onClick={() => setView("account")}
             >
               <Settings2 size={17} />
             </button>
@@ -1325,8 +1417,7 @@ function App() {
               onClick={async () => {
                 try {
                   await post("/api/logout", {})
-                  setAuthenticated(false)
-                  setSelected(new Map())
+                  signedOut()
                 } catch (e) {
                   setError((e as Error).message)
                 }
@@ -1337,291 +1428,316 @@ function App() {
           </div>
         </header>
         <main className="sheet">
-          <div className="page-title">
-            <div>
-              <h1>
-                {view === "kits"
-                  ? "组件集"
-                  : view === "selected"
-                    ? "为下一个项目挑选"
-                    : category || "组件库"}
-              </h1>
-              <p>
-                {view === "kits"
-                  ? "为不同项目保留一套搭配，固定组件版本。"
-                  : view === "selected"
-                    ? "选好的组件集中在这里，打包后交给 Agent。"
-                    : "让每一个喜欢的组件，都有下一次出场。"}
-              </p>
-            </div>
-            <button
-              className="primary"
-              onClick={() => {
-                setEditing(undefined)
-                setModal("import")
+          {view === "account" && user ? (
+            <AccountSettings
+              user={user}
+              api={request}
+              onSignedOut={() => {
+                signedOut()
+                setLoginError("密码已修改，请使用新密码重新登录。")
               }}
-            >
-              <Plus size={17} />
-              导入组件
-            </button>
-          </div>
-          <ErrorNote message={error} />
-          {notice && (
-            <div className="notice" role="status">
-              <Check size={16} />
-              {notice}
-            </div>
-          )}
-          {view !== "kits" && (
+              onTokens={() => setModal("settings")}
+            />
+          ) : (
             <>
-              <div className="filter-row">
-                <div className="search">
-                  <Search size={17} />
-                  <input
-                    aria-label="搜索组件"
-                    placeholder="搜索名称、描述或标识…"
-                    value={query}
-                    onChange={(e) => {
-                      setQuery(e.target.value)
-                      if (view === "selected") setView("library")
-                    }}
-                  />
-                  <kbd>/</kbd>
+              <div className="page-title">
+                <div>
+                  <h1>
+                    {view === "kits"
+                      ? "组件集"
+                      : view === "selected"
+                        ? "为下一个项目挑选"
+                        : category || "组件库"}
+                  </h1>
+                  <p>
+                    {view === "kits"
+                      ? "为不同项目保留一套搭配，固定组件版本。"
+                      : view === "selected"
+                        ? "选好的组件集中在这里，打包后交给 Agent。"
+                        : "让每一个喜欢的组件，都有下一次出场。"}
+                  </p>
                 </div>
-                <select
-                  className="mobile-category"
-                  aria-label="筛选类别"
-                  value={category}
-                  onChange={(e) => {
-                    setCategory(e.target.value)
-                    setPage(1)
-                  }}
-                >
-                  <option value="">全部类别</option>
-                  {categories.map((c) => (
-                    <option key={c}>{c}</option>
-                  ))}
-                </select>
-                <select
-                  aria-label="筛选技术栈"
-                  value={framework}
-                  onChange={(e) => {
-                    setFramework(e.target.value)
-                    setPage(1)
-                  }}
-                >
-                  <option value="">全部技术栈</option>
-                  <option value="react">React</option>
-                  <option value="html">HTML / CSS</option>
-                </select>
-                <div className="filter-spacer" />
-                <span className="result-count">
-                  {view === "selected" ? selected.size : total} 个组件
-                </span>
-                {view === "library" && items.length > 0 && (
-                  <button className="text-button" onClick={selectPage}>
-                    <CheckSquare size={15} />
-                    选择本页
+                {isAdmin && (
+                  <button
+                    className="primary"
+                    onClick={() => {
+                      setEditing(undefined)
+                      setModal("import")
+                    }}
+                  >
+                    <Plus size={17} />
+                    导入组件
                   </button>
                 )}
               </div>
-              {loading && view === "library" ? (
-                <div className="loading">正在读取组件…</div>
-              ) : visible.length > 0 ? (
-                <div className="component-grid">
-                  {visible.map((item) => (
-                    <article
-                      className={`component-card ${selected.has(item.id) ? "is-selected" : ""}`}
-                      key={item.id}
-                    >
-                      <div className="card-visual">
-                        <button
-                          className="card-open"
-                          aria-label={`预览${item.name}`}
-                          onClick={() =>
-                            "files" in item
-                              ? setDetail(item as ComponentDoc)
-                              : open(item.id)
-                          }
-                        >
-                          <MiniPreview item={item} />
-                        </button>
-                        <button
-                          className="select-control"
-                          aria-label={`${selected.has(item.id) ? "取消选择" : "选择"}${item.name}`}
-                          aria-pressed={selected.has(item.id)}
-                          onClick={() => toggle(item)}
-                        >
-                          {selected.has(item.id) ? (
-                            <CheckSquare size={19} />
-                          ) : (
-                            <Square size={19} />
-                          )}
-                        </button>
-                        <span className="framework-label">
-                          {item.framework === "react" ? "React" : "HTML"}
-                        </span>
-                      </div>
-                      <div className="card-body">
-                        <button
-                          className="card-title"
-                          onClick={() =>
-                            "files" in item
-                              ? setDetail(item as ComponentDoc)
-                              : open(item.id)
-                          }
-                        >
-                          {item.name}
-                          <ArrowRight size={14} />
-                        </button>
-                        <p>
-                          {item.description || "打开组件查看源码与实时预览。"}
-                        </p>
-                        <div className="card-foot">
-                          <span>{item.category}</span>
-                          <code>v{item.revision}</code>
-                        </div>
-                      </div>
-                    </article>
-                  ))}
+              <ErrorNote message={error} />
+              {notice && (
+                <div className="notice" role="status">
+                  <Check size={16} />
+                  {notice}
                 </div>
-              ) : (
-                <div className="empty-state">
-                  <div className="empty-symbol">
-                    <Layers size={40} strokeWidth={1} />
-                  </div>
-                  <h2>
-                    {view === "selected"
-                      ? "给下一个项目选几件好设计"
-                      : search || category || framework
-                        ? "没有找到匹配组件"
-                        : "你的组件收藏，从这里开始"}
-                  </h2>
-                  <p>
-                    {view === "selected"
-                      ? "从组件库加入表格、按钮和分页，再导出给 Agent。"
-                      : search || category || framework
-                        ? "尝试其他关键词，或清除筛选。"
-                        : "粘贴源码、导入 Registry，或上传一个组件包。"}
-                  </p>
-                  <div className="empty-actions">
-                    {view === "selected" ? (
-                      <button
-                        className="primary"
-                        onClick={() => setView("library")}
-                      >
-                        浏览组件库
-                      </button>
-                    ) : search || category || framework ? (
-                      <button
-                        onClick={() => {
-                          setQuery("")
-                          setCategory("")
-                          setFramework("")
+              )}
+              {view !== "kits" && (
+                <>
+                  <div className="filter-row">
+                    <div className="search">
+                      <Search size={17} />
+                      <input
+                        aria-label="搜索组件"
+                        placeholder="搜索名称、描述或标识…"
+                        value={query}
+                        onChange={(e) => {
+                          setQuery(e.target.value)
+                          if (view === "selected") setView("library")
                         }}
-                      >
-                        清除筛选
+                      />
+                      <kbd>/</kbd>
+                    </div>
+                    <select
+                      className="mobile-category"
+                      aria-label="筛选类别"
+                      value={category}
+                      onChange={(e) => {
+                        setCategory(e.target.value)
+                        setPage(1)
+                      }}
+                    >
+                      <option value="">全部类别</option>
+                      {categories.map((c) => (
+                        <option key={c}>{c}</option>
+                      ))}
+                    </select>
+                    <select
+                      aria-label="筛选技术栈"
+                      value={framework}
+                      onChange={(e) => {
+                        setFramework(e.target.value)
+                        setPage(1)
+                      }}
+                    >
+                      <option value="">全部技术栈</option>
+                      <option value="react">React</option>
+                      <option value="html">HTML / CSS</option>
+                    </select>
+                    <div className="filter-spacer" />
+                    <span className="result-count">
+                      {view === "selected" ? selected.size : total} 个组件
+                    </span>
+                    {view === "library" && items.length > 0 && (
+                      <button className="text-button" onClick={selectPage}>
+                        <CheckSquare size={15} />
+                        选择本页
                       </button>
-                    ) : (
-                      <>
-                        <button
-                          className="primary"
-                          onClick={() => setModal("import")}
-                        >
-                          <Plus size={16} />
-                          导入第一个组件
-                        </button>
-                        <button onClick={seed}>加载 4 个示例</button>
-                      </>
                     )}
                   </div>
-                </div>
+                  {loading && view === "library" ? (
+                    <div className="loading">正在读取组件…</div>
+                  ) : visible.length > 0 ? (
+                    <div className="component-grid">
+                      {visible.map((item) => (
+                        <article
+                          className={`component-card ${selected.has(item.id) ? "is-selected" : ""}`}
+                          key={item.id}
+                        >
+                          <div className="card-visual">
+                            <button
+                              className="card-open"
+                              aria-label={`预览${item.name}`}
+                              onClick={() =>
+                                "files" in item
+                                  ? setDetail(item as ComponentDoc)
+                                  : open(item.id)
+                              }
+                            >
+                              <MiniPreview item={item} />
+                            </button>
+                            <button
+                              className="select-control"
+                              aria-label={`${selected.has(item.id) ? "取消选择" : "选择"}${item.name}`}
+                              aria-pressed={selected.has(item.id)}
+                              onClick={() => toggle(item)}
+                            >
+                              {selected.has(item.id) ? (
+                                <CheckSquare size={19} />
+                              ) : (
+                                <Square size={19} />
+                              )}
+                            </button>
+                            <span className="framework-label">
+                              {item.framework === "react" ? "React" : "HTML"}
+                            </span>
+                          </div>
+                          <div className="card-body">
+                            <button
+                              className="card-title"
+                              onClick={() =>
+                                "files" in item
+                                  ? setDetail(item as ComponentDoc)
+                                  : open(item.id)
+                              }
+                            >
+                              {item.name}
+                              <ArrowRight size={14} />
+                            </button>
+                            <p>
+                              {item.description ||
+                                "打开组件查看源码与实时预览。"}
+                            </p>
+                            <div className="card-foot">
+                              <span>{item.category}</span>
+                              <code>v{item.revision}</code>
+                            </div>
+                          </div>
+                        </article>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="empty-state">
+                      <div className="empty-symbol">
+                        <Layers size={40} strokeWidth={1} />
+                      </div>
+                      <h2>
+                        {view === "selected"
+                          ? "给下一个项目选几件好设计"
+                          : search || category || framework
+                            ? "没有找到匹配组件"
+                            : "你的组件收藏，从这里开始"}
+                      </h2>
+                      <p>
+                        {view === "selected"
+                          ? "从组件库加入表格、按钮和分页，再导出给 Agent。"
+                          : search || category || framework
+                            ? "尝试其他关键词，或清除筛选。"
+                            : isAdmin
+                              ? "粘贴源码、导入 Registry，或上传一个组件包。"
+                              : "组件库暂时为空，请等待管理员添加组件。"}
+                      </p>
+                      <div className="empty-actions">
+                        {view === "selected" ? (
+                          <button
+                            className="primary"
+                            onClick={() => setView("library")}
+                          >
+                            浏览组件库
+                          </button>
+                        ) : search || category || framework ? (
+                          <button
+                            onClick={() => {
+                              setQuery("")
+                              setCategory("")
+                              setFramework("")
+                            }}
+                          >
+                            清除筛选
+                          </button>
+                        ) : isAdmin ? (
+                          <>
+                            <button
+                              className="primary"
+                              onClick={() => setModal("import")}
+                            >
+                              <Plus size={16} />
+                              导入第一个组件
+                            </button>
+                            <button onClick={seed}>加载 4 个示例</button>
+                          </>
+                        ) : null}
+                      </div>
+                    </div>
+                  )}
+                  {view === "library" && total > 0 && (
+                    <div className="pagination">
+                      <span>共 {total} 个组件 · 每页 12 个</span>
+                      <div>
+                        <button
+                          disabled={page <= 1}
+                          onClick={() => setPage(page - 1)}
+                          aria-label="上一页"
+                        >
+                          <ArrowLeft size={15} />
+                        </button>
+                        <span>
+                          第 {page} / {Math.max(1, pages)} 页
+                        </span>
+                        <button
+                          disabled={page >= pages}
+                          onClick={() => setPage(page + 1)}
+                          aria-label="下一页"
+                        >
+                          <ArrowRight size={15} />
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
-              {view === "library" && total > 0 && (
-                <div className="pagination">
-                  <span>共 {total} 个组件 · 每页 12 个</span>
-                  <div>
-                    <button
-                      disabled={page <= 1}
-                      onClick={() => setPage(page - 1)}
-                      aria-label="上一页"
-                    >
-                      <ArrowLeft size={15} />
-                    </button>
-                    <span>
-                      第 {page} / {Math.max(1, pages)} 页
-                    </span>
-                    <button
-                      disabled={page >= pages}
-                      onClick={() => setPage(page + 1)}
-                      aria-label="下一页"
-                    >
-                      <ArrowRight size={15} />
-                    </button>
-                  </div>
-                </div>
+              {view === "kits" && (
+                <>
+                  {kits.length ? (
+                    <div className="kit-grid">
+                      {kits.map((kit) => (
+                        <button
+                          className="kit-card"
+                          onClick={() => loadKit(kit.id)}
+                          key={kit.id}
+                        >
+                          <Folder size={28} strokeWidth={1.2} />
+                          <strong>{kit.name}</strong>
+                          <span>{kit.count} 个组件 · 固定版本</span>
+                          <small>
+                            载入选择 <ArrowRight size={14} />
+                          </small>
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="empty-state">
+                      <FolderPlus size={40} strokeWidth={1} />
+                      <h2>为项目留下一套搭配</h2>
+                      <p>
+                        {isAdmin
+                          ? "先选择组件，再点击“保存组件集”。"
+                          : "管理员保存的组件集会显示在这里。"}
+                      </p>
+                      <button onClick={() => setView("library")}>
+                        去选择组件
+                      </button>
+                    </div>
+                  )}
+                  {kitTotal > 24 && (
+                    <div className="pagination">
+                      <span>共 {kitTotal} 个组件集</span>
+                      <div>
+                        <button
+                          disabled={kitPage <= 1}
+                          onClick={() => setKitPage(kitPage - 1)}
+                        >
+                          上一页
+                        </button>
+                        <span>{kitPage}</span>
+                        <button
+                          disabled={kitPage * 24 >= kitTotal}
+                          onClick={() => setKitPage(kitPage + 1)}
+                        >
+                          下一页
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
+              <div className="sheet-foot">
+                <span>
+                  <ShieldCheck size={14} />
+                  源码、版本与资源保存在你的服务器
+                </span>
+                {isAdmin && <button onClick={seed}>添加内置示例</button>}
+              </div>
             </>
           )}
-          {view === "kits" && (
-            <>
-              {kits.length ? (
-                <div className="kit-grid">
-                  {kits.map((kit) => (
-                    <button
-                      className="kit-card"
-                      onClick={() => loadKit(kit.id)}
-                      key={kit.id}
-                    >
-                      <Folder size={28} strokeWidth={1.2} />
-                      <strong>{kit.name}</strong>
-                      <span>{kit.count} 个组件 · 固定版本</span>
-                      <small>
-                        载入选择 <ArrowRight size={14} />
-                      </small>
-                    </button>
-                  ))}
-                </div>
-              ) : (
-                <div className="empty-state">
-                  <FolderPlus size={40} strokeWidth={1} />
-                  <h2>为项目留下一套搭配</h2>
-                  <p>先选择组件，再点击“保存组件集”。</p>
-                  <button onClick={() => setView("library")}>去选择组件</button>
-                </div>
-              )}
-              {kitTotal > 24 && (
-                <div className="pagination">
-                  <span>共 {kitTotal} 个组件集</span>
-                  <div>
-                    <button
-                      disabled={kitPage <= 1}
-                      onClick={() => setKitPage(kitPage - 1)}
-                    >
-                      上一页
-                    </button>
-                    <span>{kitPage}</span>
-                    <button
-                      disabled={kitPage * 24 >= kitTotal}
-                      onClick={() => setKitPage(kitPage + 1)}
-                    >
-                      下一页
-                    </button>
-                  </div>
-                </div>
-              )}
-            </>
-          )}
-          <div className="sheet-foot">
-            <span>
-              <ShieldCheck size={14} />
-              源码、版本与资源保存在你的服务器
-            </span>
-            <button onClick={seed}>添加内置示例</button>
-          </div>
         </main>
       </div>
-      {selected.size > 0 && (
+      {selected.size > 0 && view !== "account" && (
         <div className="selection-bar">
           <div>
             <CheckSquare size={19} />
@@ -1629,10 +1745,12 @@ function App() {
             <button onClick={() => setSelected(new Map())}>清空</button>
           </div>
           <div>
-            <button onClick={() => setModal("kit")}>
-              <FolderPlus size={16} />
-              保存组件集
-            </button>
+            {isAdmin && (
+              <button onClick={() => setModal("kit")}>
+                <FolderPlus size={16} />
+                保存组件集
+              </button>
+            )}
             <button className="primary" onClick={() => setModal("export")}>
               <ArrowDownToLine size={16} />
               导出给 Agent
@@ -1647,14 +1765,18 @@ function App() {
           selectedRevision={selected.get(detail.id)?.revision}
           onSelect={toggle}
           onClose={() => setDetail(null)}
-          onEdit={() => {
-            setEditing(detail)
-            setDetail(null)
-            setModal("import")
-          }}
+          onEdit={
+            isAdmin
+              ? () => {
+                  setEditing(detail)
+                  setDetail(null)
+                  setModal("import")
+                }
+              : undefined
+          }
         />
       )}{" "}
-      {modal === "import" && (
+      {isAdmin && modal === "import" && (
         <ImportForm
           initial={editing}
           onClose={closeModal}
@@ -1668,8 +1790,10 @@ function App() {
       {modal === "export" && (
         <ExportPanel selection={[...selected.values()]} onClose={closeModal} />
       )}{" "}
-      {modal === "settings" && <TokenSettings onClose={closeModal} />}{" "}
-      {modal === "kit" && (
+      {isAdmin && modal === "settings" && (
+        <TokenSettings onClose={closeModal} />
+      )}{" "}
+      {isAdmin && modal === "kit" && (
         <Modal title="保存组件集" onClose={closeModal}>
           <form className="form-stack" onSubmit={saveKit}>
             <p className="description">

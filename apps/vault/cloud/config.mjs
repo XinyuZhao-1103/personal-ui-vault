@@ -1,6 +1,7 @@
 import { z } from "zod"
+import { identityConfig } from "../server/identity-config.mjs"
 
-export function cloudConfig(env) {
+export function cloudConfig(env, origin) {
   const integer = (value, min, max) => z.coerce.number().int().min(min).max(max).default(value)
   const values = z.object({
     VAULT_IMPORT_BYTES: integer(1048576, 65536, 1048576),
@@ -12,6 +13,7 @@ export function cloudConfig(env) {
     VAULT_LOCAL_DEV: z.enum(["true", "false"]).default("false"),
   }).parse(env)
   return {
+    ...identityConfig(env, origin),
     maxBytes: values.VAULT_IMPORT_BYTES,
     maxPageSize: values.VAULT_MAX_PAGE_SIZE,
     maxSelection: values.VAULT_MAX_SELECTION,

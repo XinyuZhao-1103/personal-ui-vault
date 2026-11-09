@@ -8,11 +8,15 @@
 
 ## 访问与凭据
 
-Sites 必须保持仅所有者访问。平台负责 ChatGPT 登录，后端根据平台身份授权浏览器操作。服务同步接口依赖私有站点的 Dispatch 服务访问控制。调整站点受众前必须补充服务接口独立鉴权与数据范围控制。
+Sites 受众设为 public，访客可直接打开网站登录页。网站使用独立账号密码与 HttpOnly/Secure Cookie 会话，后端按 admin、visitor 角色授权。平台身份头不能授予组件或后台权限。首次管理员账号由 VAULT_ADMIN_USERNAME（默认 admin）与 Secret VAULT_PASSWORD 初始化，之后密码在数据库中维护，重启不会覆盖已修改密码。
 
-Agent Token 只有 GET 权限。私有站点的外部调用同时需要平台服务访问凭据。真实 `.env`、数据库、Token 和运行产物均不提交。
+Agent Token 只有组件与组件集读取权限。管理员可管理用户、角色、禁用状态、密码和登录日志。访客可浏览、预览及导出。账号、密码派生值、会话摘要、登录日志持久化在 D1。数据库迁移0001新增身份表，保留原组件数据，旧登录需要重新验证。真实 `.env`、数据库、Token 和运行产物均不提交。
 
-GitHub Actions 使用仓库 Secret `VAULT_SITE_SERVICE_TOKEN` 保存平台服务凭据，变量 `VAULT_SITE_URL` 保存站点 HTTPS 地址。服务凭据失效或轮换后需同步更新 Secret。来源访问使用每次运行自动签发的只读 `GITHUB_TOKEN`，通过 HTTPS 请求体交给站点并仅在本次请求内使用，避免匿名共享配额限制，不落库、不写日志。
+GitHub Actions 使用仓库 Secret `VAULT_SITE_SERVICE_TOKEN` 保存服务凭据，变量 `VAULT_SITE_URL` 保存站点 HTTPS 地址。同步脚本发送平台服务头及 `X-Vault-Service-Token`，应用通过 Sites Secret `VAULT_SERVICE_TOKEN` 独立校验后者，仅允许固定同步接口、初始化目录和 MCP 入口。服务密钥不能读取用户管理接口或代替浏览器登录。失效或轮换后需同步更新 Sites Secret 和 Actions Secret。来源访问使用每次运行自动签发的只读 `GITHUB_TOKEN`，通过 HTTPS 请求体交给站点并仅在本次请求内使用，不落库、不写日志。
+
+公开站点的 MCP 同样要求应用层服务密钥，原插件仅携带 ChatGPT 身份时不能调用维护工具。第三方 OAuth 本轮仅预留配置，见 `OAUTH.md`。
+
+在 Sites 环境变量中设置 VAULT_PASSWORD、VAULT_AUDIT_HASH_KEY 和 VAULT_SERVICE_TOKEN 为 Secret。后两项至少32位随机值。会话、登录限流、日志保留配置与允许范围统一见 `.env.example`，云端沿用同名配置。VAULT_PASSWORD 初始化完成后仍作为缺省审计密钥的兼容来源，建议单独设置 VAULT_AUDIT_HASH_KEY。
 
 ## 定时同步
 

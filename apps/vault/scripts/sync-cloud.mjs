@@ -8,7 +8,7 @@ const token = process.env.VAULT_SITE_SERVICE_TOKEN
 if (!token) throw new Error("缺少 VAULT_SITE_SERVICE_TOKEN")
 if (!origin.startsWith("https://")) throw new Error("VAULT_SITE_URL 必须使用 HTTPS")
 async function api(path, method = "GET", body) {
-  const response = await fetch(origin + path, { method, signal: AbortSignal.timeout(120000), headers: { "Content-Type": "application/json", "OAI-Sites-Authorization": `Bearer ${token}` }, body: body === undefined ? undefined : JSON.stringify(body) })
+  const response = await fetch(origin + path, { method, signal: AbortSignal.timeout(120000), headers: { "Content-Type": "application/json", "OAI-Sites-Authorization": `Bearer ${token}`, "X-Vault-Service-Token": token }, body: body === undefined ? undefined : JSON.stringify(body) })
   let value
   try { value = await response.json() } catch { throw new Error(`${path} HTTP ${response.status}，站点服务访问失败`) }
   if (!response.ok) throw new Error(`${path} HTTP ${response.status} ${value.error || "请求失败"}`)
