@@ -42,6 +42,8 @@ export async function syncSources(store, config, env) {
         const commits = await github(`/repos/${source.repository}/commits?path=${encodeURIComponent(location.directory)}&per_page=1`, config, env)
         if (!commits.length) continue
         const commit = await github(`/repos/${source.repository}/commits/${commits[0].sha}`, config, env)
+        const licenseText = await fetchAllowedText(`https://raw.githubusercontent.com/${source.repository}/${commit.sha}/${source.licensePath}`, { ...config, registryHosts: ["raw.githubusercontent.com"] })
+        if (!licenseText.includes("Permission is hereby granted")) throw new AppError("来源许可正文需要人工核对", 422)
         const candidates = (commit.files || []).filter(file => file.status !== "removed" && file.filename.startsWith(location.directory + "/") && file.filename.endsWith(".tsx")).slice(0, config.syncBatchSize)
         for (const item of candidates) {
           const key = `${source.repository}:${item.filename}:${commit.sha}`
@@ -53,17 +55,19 @@ export async function syncSources(store, config, env) {
           const slug = baseline?.slug || `${location.prefix}-${item.filename.split("/").pop().replace(/\.tsx$/, "")}`
           const document = validateComponent({
             ...(baseline || {}), name: baseline?.name || `${source.repository.split("/")[1]} · ${slug}`, slug,
-            category: baseline?.category || "其他", framework: "react", description: baseline?.description || `来源 ${source.repository}，源码更新 ${commit.commit.committer.date}`,
-            source: `https://github.com/${source.repository}/blob/${commit.sha}/${item.filename}`, license: source.license,
+            category: baseline?.category || "其他", framework: "react", description: `来源 ${source.repository}，源码最近更新 ${commit.commit.committer.date}`,
+            source: `https://github.com/${source.repository}/blob/${commit.sha}/${item.filename}`, license: licenseText,
             entry: "component.tsx", demo: baseline?.demo || "",
             tags: [...new Set([...(baseline?.tags || []), "自动采集"])],
             dependencies: Object.fromEntries(Object.entries(analyze(content).dependencies).map(([name, version]) => [name, packageVersions[name] || version])),
             files: [
               { path: "component.tsx", content },
-              ...(baseline?.files.filter(file => file.path !== "component.tsx") || [
+              ...(baseline?.files.filter(file => !["component.tsx", "LICENSE.txt", "PROVENANCE.json", "upstream/component.tsx.txt"].includes(file.path)) || [
                 { path: "lib/utils.ts", content: 'import {clsx} from "clsx";import {twMerge} from "tailwind-merge";export function cn(...values:unknown[]){return twMerge(clsx(values))}' },
-                { path: "LICENSE.txt", content: source.license },
               ]),
+              { path: "LICENSE.txt", content: licenseText },
+              { path: "upstream/component.tsx.txt", content },
+              { path: "PROVENANCE.json", content: JSON.stringify({ repository: source.repository, path: item.filename, commit: commit.sha, modifiedAt: commit.commit.committer.date, collectedAt: now }, null, 2) },
             ],
           }, config.maxBytes)
           await store.statement("INSERT OR IGNORE INTO sync_candidates VALUES(?,?,?,?,?,'pending','等待隔离编译验证',?)", key, source.repository, item.filename, commit.sha, JSON.stringify(document), now).run()
@@ -113,7 +117,14 @@ export async function publishCandidate(body, store, config, env) {
   const digest = await documentHash(document)
   const existing = await store.statement("SELECT id FROM components WHERE slug=?", document.slug).first()
   const current = existing ? await store.get(existing.id) : null
-  if (current && await documentHash(current) === digest) return { status: "unchanged", id: current.id, revision: current.revision, readback: "verified" }
+  if (current && await documentHash(current) === digest) {
+    // 修复写入成功、任务中断发生在同步状态落库之前的重试。
+    await store.db.batch([
+      store.statement("UPDATE sync_state SET value=? WHERE key=? AND EXISTS(SELECT 1 FROM components WHERE id=? AND revision=?)", digest, `managed:${current.id}`, current.id, current.revision),
+      store.statement("UPDATE sync_candidates SET status='imported',reason='相同版本读回通过',document=?,updated_at=? WHERE id=?", JSON.stringify(document), new Date().toISOString(), input.candidateId),
+    ])
+    return { status: "unchanged", id: current.id, revision: current.revision, readback: "verified" }
+  }
   if (current) {
     const previous = await store.statement("SELECT value FROM sync_state WHERE key=?", `managed:${current.id}`).first()
     if (!previous || previous.value !== await documentHash(current)) throw new AppError("组件已有用户修改，已保留当前内容并留在候选区", 409)
