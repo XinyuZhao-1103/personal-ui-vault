@@ -1,0 +1,19 @@
+@import "tailwindcss";
+@theme inline {
+  --color-background:hsl(var(--background));
+  --color-foreground:hsl(var(--foreground));
+  --color-primary:hsl(var(--primary));
+  --color-primary-foreground:hsl(var(--primary-foreground));
+  --color-secondary:hsl(var(--secondary));
+  --color-secondary-foreground:hsl(var(--secondary-foreground));
+  --color-muted:hsl(var(--muted));
+  --color-muted-foreground:hsl(var(--muted-foreground));
+  --color-accent:hsl(var(--accent));
+  --color-accent-foreground:hsl(var(--accent-foreground));
+  --color-border:hsl(var(--border));
+  --color-input:hsl(var(--input));
+  --color-ring:hsl(var(--ring));
+}
+:root{--background:0 0% 100%;--foreground:0 0% 9%;--primary:0 0% 9%;--primary-foreground:0 0% 98%;--secondary:0 0% 96%;--secondary-foreground:0 0% 9%;--muted:0 0% 96%;--muted-foreground:0 0% 42%;--accent:0 0% 96%;--accent-foreground:0 0% 9%;--border:0 0% 88%;--input:0 0% 88%;--ring:0 0% 9%;--radius:.5rem}
+body{margin:0;padding:28px;font:14px system-ui;color:#171717;background:#fff}
+#root{min-height:200px;display:grid;align-content:center}

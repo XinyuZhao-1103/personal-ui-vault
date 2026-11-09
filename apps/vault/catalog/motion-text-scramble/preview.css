@@ -1,0 +1,4 @@
+/* 本地适配层，原始组件见 upstream/，来源和许可见 PROVENANCE.json 与 LICENSE.txt。 */
+*,::before,::after{border-color:hsl(var(--border))}
+
+

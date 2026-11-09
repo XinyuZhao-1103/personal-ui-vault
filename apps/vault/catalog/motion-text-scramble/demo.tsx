@@ -1,0 +1,2 @@
+import React,{useState} from "react";import {TextScramble} from "./component";export default function Demo(){const[key,setKey]=useState(0);return <div className="flex flex-col items-center gap-6"><TextScramble key={key} className="text-2xl font-medium tracking-wide" duration={1.1}>Design with intention.</TextScramble><button className="rounded-md border px-4 py-2 text-sm" onClick={()=>setKey(key+1)}>重新播放</button></div>}
+

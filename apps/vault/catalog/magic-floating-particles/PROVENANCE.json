@@ -1,0 +1,17 @@
+{
+  "repository": "magicuidesign/magicui",
+  "repositoryStars": 23106,
+  "starsObservedOn": "2026-11-06",
+  "repositorySnapshotCommit": "37ce829f18dd7d0a7219531a4249b664419933ea",
+  "upstreamPath": "apps/www/registry/magicui/floating-3d-particles.tsx",
+  "upstreamBlobSha": "4e052015b88d772446224aba3b3ca15b71cd9b7c",
+  "sourceLastChangedAt": "2026-09-04T13:02:35Z",
+  "sourceLastChangedCommit": "7f260302299754c50bc5cb8900f1cd5fb4638bd4",
+  "importedOn": "2026-11-06",
+  "upstreamUrl": "https://github.com/magicuidesign/magicui/blob/37ce829f18dd7d0a7219531a4249b664419933ea/apps/www/registry/magicui/floating-3d-particles.tsx",
+  "adaptations": [
+    "添加本地中文演示，演示数据为虚构示例。",
+    "添加本地 cn 工具与 Tailwind 3 边框基础样式。"
+  ]
+}
+

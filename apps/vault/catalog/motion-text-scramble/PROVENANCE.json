@@ -1,0 +1,17 @@
+{
+  "repository": "ibelick/motion-primitives",
+  "repositoryStars": 6904,
+  "starsObservedOn": "2026-11-06",
+  "repositorySnapshotCommit": "120f64f6ca60348e251f929e9c81f11ccbe45eda",
+  "upstreamPath": "components/core/text-scramble.tsx",
+  "upstreamBlobSha": "93104ead82aa9cb7961bc52dc1a13d092d1ec965",
+  "sourceLastChangedAt": "2026-03-19T14:09:01Z",
+  "sourceLastChangedCommit": "92586e62a951eb9b6bfd1cc7c8a4e6e2ab6ba17d",
+  "importedOn": "2026-11-06",
+  "upstreamUrl": "https://github.com/ibelick/motion-primitives/blob/120f64f6ca60348e251f929e9c81f11ccbe45eda/components/core/text-scramble.tsx",
+  "adaptations": [
+    "添加本地中文演示，演示数据为虚构示例。",
+    "添加本地 cn 工具与 Tailwind 3 边框基础样式。"
+  ]
+}
+

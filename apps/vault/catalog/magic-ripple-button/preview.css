@@ -1,0 +1,6 @@
+/* 本地适配层，原始组件见 upstream/，来源和许可见 PROVENANCE.json 与 LICENSE.txt。 */
+*,::before,::after{border-color:hsl(var(--border))}
+@keyframes rippling { to { transform:scale(2); opacity:0; } }
+.animate-rippling { animation:rippling var(--duration,600ms) ease-out; }
+@media (prefers-reduced-motion:reduce){.animate-rippling{animation-duration:1ms}}
+

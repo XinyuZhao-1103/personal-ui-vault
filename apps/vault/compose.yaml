@@ -1,0 +1,31 @@
+services:
+  vault:
+    image: personal-ui-vault:0.1.0
+    build:
+      context: ../..
+      dockerfile: apps/vault/Dockerfile
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      NODE_ENV: production
+      VAULT_HOST: 0.0.0.0
+      VAULT_PORT: 4310
+      VAULT_DATA_DIR: /app/data
+      VAULT_ORIGIN: ${VAULT_ORIGIN:-http://localhost:4310}
+    ports:
+      - "${VAULT_BIND_IP:-127.0.0.1}:${VAULT_PUBLIC_PORT:-4310}:4310"
+    volumes:
+      - vault_data:/app/data
+    read_only: true
+    tmpfs:
+      - /tmp:size=128m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 768m
+    cpus: 2
+    pids_limit: 128
+
+volumes:
+  vault_data:

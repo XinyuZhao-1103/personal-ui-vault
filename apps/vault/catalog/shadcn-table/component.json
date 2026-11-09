@@ -1,0 +1,30 @@
+{
+  "name": "shadcn · 清爽数据表格",
+  "slug": "shadcn-table",
+  "description": "shadcn-ui · 表头、表体、表尾与悬停状态，演示包含金额排序。 源码最近修改 2026-09-04，采集当前主分支快照。",
+  "category": "表格",
+  "framework": "react",
+  "tags": [
+    "首批精选",
+    "shadcn",
+    "MIT"
+  ],
+  "source": "https://github.com/shadcn-ui/ui/blob/8a3536678a528cc012b9e62484290e79d0be410f/apps/v4/registry/new-york-v4/ui/table.tsx",
+  "license": "MIT License\n\nCopyright (c) 2023 shadcn\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n",
+  "entry": "component.tsx",
+  "demo": "export { default } from \"./demo\";",
+  "dependencies": {
+    "clsx": "2.1.1",
+    "tailwind-merge": "2.6.0"
+  },
+  "files": [
+    "component.tsx",
+    "demo.tsx",
+    "lib/utils.ts",
+    "preview.css",
+    "LICENSE.txt",
+    "PROVENANCE.json",
+    "upstream/component.tsx.txt"
+  ]
+}
+

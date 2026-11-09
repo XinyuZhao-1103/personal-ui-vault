@@ -1,0 +1,2 @@
+import React from "react";import {Floating3DParticles} from "./component";export default function Demo(){return <div className="relative mx-auto grid h-56 w-full max-w-xl place-items-center overflow-hidden rounded-xl border bg-neutral-950"><Floating3DParticles quantity={100} color="#7dd3c0" opacity={0.6} drift={0.35} size={3} depth={0.6}/><div className="relative text-center text-white"><h2 className="text-2xl font-medium tracking-tight">轻盈，流动，有层次。</h2><p className="mt-3 text-xs text-neutral-300">Canvas 2D · 程序化粒子 · 本地演示</p></div></div>}
+

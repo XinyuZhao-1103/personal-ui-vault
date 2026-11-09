@@ -1,0 +1,8 @@
+data/
+generated/
+test-results/
+playwright-report/
+.env
+work/
+.wrangler/
+dist-sites/

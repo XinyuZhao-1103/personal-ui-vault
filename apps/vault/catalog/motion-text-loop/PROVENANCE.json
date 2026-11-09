@@ -1,0 +1,17 @@
+{
+  "repository": "ibelick/motion-primitives",
+  "repositoryStars": 6904,
+  "starsObservedOn": "2026-11-06",
+  "repositorySnapshotCommit": "120f64f6ca60348e251f929e9c81f11ccbe45eda",
+  "upstreamPath": "components/core/text-loop.tsx",
+  "upstreamBlobSha": "0f3c7e0c48d4b5a8c773163145ac2806654f9dd0",
+  "sourceLastChangedAt": "2025-01-17T17:20:23Z",
+  "sourceLastChangedCommit": "c8a50d23306c0c9cac8009be02878bd2c9662baf",
+  "importedOn": "2026-11-06",
+  "upstreamUrl": "https://github.com/ibelick/motion-primitives/blob/120f64f6ca60348e251f929e9c81f11ccbe45eda/components/core/text-loop.tsx",
+  "adaptations": [
+    "添加本地中文演示，演示数据为虚构示例。",
+    "添加本地 cn 工具与 Tailwind 3 边框基础样式。"
+  ]
+}
+

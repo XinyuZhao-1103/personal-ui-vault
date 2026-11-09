@@ -1,0 +1,31 @@
+{
+  "name": "Motion Primitives · 字符解码",
+  "slug": "motion-text-scramble",
+  "description": "ibelick · 2026-03 更新，文字从随机字符逐步还原，适合短标题和反馈。 源码最近修改 2026-03-19，采集当前主分支快照。",
+  "category": "反馈",
+  "framework": "react",
+  "tags": [
+    "首批精选",
+    "motion-primitives",
+    "MIT"
+  ],
+  "source": "https://github.com/ibelick/motion-primitives/blob/120f64f6ca60348e251f929e9c81f11ccbe45eda/components/core/text-scramble.tsx",
+  "license": "MIT License\n\nCopyright (c) 2024 ibelick\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\napp/page.tsx\n",
+  "entry": "component.tsx",
+  "demo": "export { default } from \"./demo\";",
+  "dependencies": {
+    "clsx": "2.1.1",
+    "tailwind-merge": "2.6.0",
+    "motion": "12.23.24"
+  },
+  "files": [
+    "component.tsx",
+    "demo.tsx",
+    "lib/utils.ts",
+    "preview.css",
+    "LICENSE.txt",
+    "PROVENANCE.json",
+    "upstream/component.tsx.txt"
+  ]
+}
+

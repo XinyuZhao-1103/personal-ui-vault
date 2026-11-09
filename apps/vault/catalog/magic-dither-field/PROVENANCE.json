@@ -1,0 +1,17 @@
+{
+  "repository": "magicuidesign/magicui",
+  "repositoryStars": 23106,
+  "starsObservedOn": "2026-11-06",
+  "repositorySnapshotCommit": "37ce829f18dd7d0a7219531a4249b664419933ea",
+  "upstreamPath": "apps/www/registry/magicui/dither-field.tsx",
+  "upstreamBlobSha": "de44a25dd3d5620d6e47038b40e84119d2b7c3af",
+  "sourceLastChangedAt": "2026-11-02T23:14:17Z",
+  "sourceLastChangedCommit": "43c0915a4e319e1eb037c55f7714f488c9ad238d",
+  "importedOn": "2026-11-06",
+  "upstreamUrl": "https://github.com/magicuidesign/magicui/blob/37ce829f18dd7d0a7219531a4249b664419933ea/apps/www/registry/magicui/dither-field.tsx",
+  "adaptations": [
+    "添加本地中文演示，演示数据为虚构示例。",
+    "添加本地 cn 工具与 Tailwind 3 边框基础样式。"
+  ]
+}
+

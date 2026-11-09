@@ -1,0 +1,2 @@
+import React,{useState} from "react";import {RippleButton} from "./component";export default function Demo(){const[count,setCount]=useState(0);return <div className="flex flex-col items-center gap-5"><RippleButton className="border-neutral-900 bg-neutral-900 px-8 py-3 text-white" rippleColor="#c7e9de" onClick={()=>setCount(count+1)}>体验涟漪效果</RippleButton><p className="text-xs text-muted-foreground">已点击 {count} 次 · 支持快速连续点击</p></div>}
+

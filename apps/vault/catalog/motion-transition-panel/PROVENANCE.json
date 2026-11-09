@@ -1,0 +1,17 @@
+{
+  "repository": "ibelick/motion-primitives",
+  "repositoryStars": 6904,
+  "starsObservedOn": "2026-11-06",
+  "repositorySnapshotCommit": "120f64f6ca60348e251f929e9c81f11ccbe45eda",
+  "upstreamPath": "components/core/transition-panel.tsx",
+  "upstreamBlobSha": "15091cc22fb4ceab8ced13a5e155dd02abe30523",
+  "sourceLastChangedAt": "2025-01-09T15:25:28Z",
+  "sourceLastChangedCommit": "e3c7b9967f5a3f59e993a760af463a454d215e16",
+  "importedOn": "2026-11-06",
+  "upstreamUrl": "https://github.com/ibelick/motion-primitives/blob/120f64f6ca60348e251f929e9c81f11ccbe45eda/components/core/transition-panel.tsx",
+  "adaptations": [
+    "添加本地中文演示，演示数据为虚构示例。",
+    "添加本地 cn 工具与 Tailwind 3 边框基础样式。"
+  ]
+}
+

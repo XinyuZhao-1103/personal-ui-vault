@@ -1,0 +1,18 @@
+{
+  "repository": "magicuidesign/magicui",
+  "repositoryStars": 23106,
+  "starsObservedOn": "2026-11-06",
+  "repositorySnapshotCommit": "37ce829f18dd7d0a7219531a4249b664419933ea",
+  "upstreamPath": "apps/www/registry/magicui/ripple-button.tsx",
+  "upstreamBlobSha": "efe83c8d8907c70ffb05ef544440694c868a244c",
+  "sourceLastChangedAt": "2026-10-17T05:27:02Z",
+  "sourceLastChangedCommit": "efe76fc5755eca1142dd4f74c1d6f0ace2887e3c",
+  "importedOn": "2026-11-06",
+  "upstreamUrl": "https://github.com/magicuidesign/magicui/blob/37ce829f18dd7d0a7219531a4249b664419933ea/apps/www/registry/magicui/ripple-button.tsx",
+  "adaptations": [
+    "添加本地中文演示，演示数据为虚构示例。",
+    "添加本地 cn 工具与 Tailwind 3 边框基础样式。",
+    "为 animate-rippling 补充本地动画样式，减少动态偏好时缩短动画。"
+  ]
+}
+

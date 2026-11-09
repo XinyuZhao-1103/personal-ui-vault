@@ -1,0 +1,17 @@
+{
+  "repository": "magicuidesign/magicui",
+  "repositoryStars": 23106,
+  "starsObservedOn": "2026-11-06",
+  "repositorySnapshotCommit": "37ce829f18dd7d0a7219531a4249b664419933ea",
+  "upstreamPath": "apps/www/registry/magicui/animated-subscribe-button.tsx",
+  "upstreamBlobSha": "d78e95e69a449f81b87a85614674f7f04c3f2312",
+  "sourceLastChangedAt": "2026-07-31T11:41:14Z",
+  "sourceLastChangedCommit": "58ee1feebc504a660c00087b369da511e913477e",
+  "importedOn": "2026-11-06",
+  "upstreamUrl": "https://github.com/magicuidesign/magicui/blob/37ce829f18dd7d0a7219531a4249b664419933ea/apps/www/registry/magicui/animated-subscribe-button.tsx",
+  "adaptations": [
+    "添加本地中文演示，演示数据为虚构示例。",
+    "添加本地 cn 工具与 Tailwind 3 边框基础样式。"
+  ]
+}
+

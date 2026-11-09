@@ -1,0 +1,18 @@
+{
+  "repository": "shadcn-ui/ui",
+  "repositoryStars": 127468,
+  "starsObservedOn": "2026-11-06",
+  "repositorySnapshotCommit": "8a3536678a528cc012b9e62484290e79d0be410f",
+  "upstreamPath": "apps/v4/registry/new-york-v4/ui/pagination.tsx",
+  "upstreamBlobSha": "0e5980373355daf65200d8070ed99ffb839fbf8d",
+  "sourceLastChangedAt": "2026-09-04T05:21:22Z",
+  "sourceLastChangedCommit": "c257f688cf4de7ec10cc1be84cad29cd4631182c",
+  "importedOn": "2026-11-06",
+  "upstreamUrl": "https://github.com/shadcn-ui/ui/blob/8a3536678a528cc012b9e62484290e79d0be410f/apps/v4/registry/new-york-v4/ui/pagination.tsx",
+  "adaptations": [
+    "添加本地中文演示，演示数据为虚构示例。",
+    "添加本地 cn 工具与 Tailwind 3 边框基础样式。",
+    "将 cn 包改为本地工具，将 radix-ui 的 Slot 聚合导入改为等价的 @radix-ui/react-slot 导入；调整 Tailwind 4 的 shadow-xs 和 has-aria-expanded 写法以兼容本地 Tailwind 3。"
+  ]
+}
+

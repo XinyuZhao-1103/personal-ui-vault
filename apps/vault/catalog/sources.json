@@ -1,0 +1,99 @@
+{
+  "collectedOn": "2026-11-06",
+  "policy": "星数为仓库指标，最新指所固定主分支快照；源文件最近修改时间逐组件保留。",
+  "sources": [
+    {
+      "repository": "shadcn-ui/ui",
+      "url": "https://github.com/shadcn-ui/ui",
+      "stars": 127468,
+      "starsObservedOn": "2026-11-06",
+      "repositoryPushedAt": "2026-11-06T06:08:19Z",
+      "snapshotCommit": "8a3536678a528cc012b9e62484290e79d0be410f",
+      "license": "MIT License\n\nCopyright (c) 2023 shadcn\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n",
+      "licensePath": "LICENSE.md"
+    },
+    {
+      "repository": "magicuidesign/magicui",
+      "url": "https://github.com/magicuidesign/magicui",
+      "stars": 23106,
+      "starsObservedOn": "2026-11-06",
+      "repositoryPushedAt": "2026-11-05T07:13:21Z",
+      "snapshotCommit": "37ce829f18dd7d0a7219531a4249b664419933ea",
+      "license": "MIT License\n\nCopyright (c) Magic UI\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n",
+      "licensePath": "LICENSE.md"
+    },
+    {
+      "repository": "ibelick/motion-primitives",
+      "url": "https://github.com/ibelick/motion-primitives",
+      "stars": 6904,
+      "starsObservedOn": "2026-11-06",
+      "repositoryPushedAt": "2026-09-28T13:32:11Z",
+      "snapshotCommit": "120f64f6ca60348e251f929e9c81f11ccbe45eda",
+      "license": "MIT License\n\nCopyright (c) 2024 ibelick\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\napp/page.tsx\n",
+      "licensePath": "LICENCE.md"
+    }
+  ],
+  "components": [
+    {
+      "slug": "shadcn-button",
+      "repository": "shadcn-ui/ui",
+      "path": "apps/v4/registry/new-york-v4/ui/button.tsx",
+      "lastModifiedAt": "2026-09-04T05:21:22Z"
+    },
+    {
+      "slug": "shadcn-table",
+      "repository": "shadcn-ui/ui",
+      "path": "apps/v4/registry/new-york-v4/ui/table.tsx",
+      "lastModifiedAt": "2026-09-04T05:21:22Z"
+    },
+    {
+      "slug": "shadcn-pagination",
+      "repository": "shadcn-ui/ui",
+      "path": "apps/v4/registry/new-york-v4/ui/pagination.tsx",
+      "lastModifiedAt": "2026-09-04T05:21:22Z"
+    },
+    {
+      "slug": "magic-dither-field",
+      "repository": "magicuidesign/magicui",
+      "path": "apps/www/registry/magicui/dither-field.tsx",
+      "lastModifiedAt": "2026-11-02T23:14:17Z"
+    },
+    {
+      "slug": "magic-ripple-button",
+      "repository": "magicuidesign/magicui",
+      "path": "apps/www/registry/magicui/ripple-button.tsx",
+      "lastModifiedAt": "2026-10-17T05:27:02Z"
+    },
+    {
+      "slug": "magic-floating-particles",
+      "repository": "magicuidesign/magicui",
+      "path": "apps/www/registry/magicui/floating-3d-particles.tsx",
+      "lastModifiedAt": "2026-09-04T13:02:35Z"
+    },
+    {
+      "slug": "magic-subscribe-button",
+      "repository": "magicuidesign/magicui",
+      "path": "apps/www/registry/magicui/animated-subscribe-button.tsx",
+      "lastModifiedAt": "2026-07-31T11:41:14Z"
+    },
+    {
+      "slug": "motion-text-scramble",
+      "repository": "ibelick/motion-primitives",
+      "path": "components/core/text-scramble.tsx",
+      "lastModifiedAt": "2026-03-19T14:09:01Z"
+    },
+    {
+      "slug": "motion-text-loop",
+      "repository": "ibelick/motion-primitives",
+      "path": "components/core/text-loop.tsx",
+      "lastModifiedAt": "2025-01-17T17:20:23Z"
+    },
+    {
+      "slug": "motion-transition-panel",
+      "repository": "ibelick/motion-primitives",
+      "path": "components/core/transition-panel.tsx",
+      "lastModifiedAt": "2025-01-09T15:25:28Z"
+    }
+  ]
+}
+

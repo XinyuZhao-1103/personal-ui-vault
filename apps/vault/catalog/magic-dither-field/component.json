@@ -1,0 +1,30 @@
+{
+  "name": "Magic UI · 点阵光场背景",
+  "slug": "magic-dither-field",
+  "description": "magicuidesign · 2026-11 新增的 WebGL2 点阵背景，提供柔光、波浪和极光模式。 源码最近修改 2026-11-02，采集当前主分支快照。",
+  "category": "其他",
+  "framework": "react",
+  "tags": [
+    "首批精选",
+    "magic-ui",
+    "MIT"
+  ],
+  "source": "https://github.com/magicuidesign/magicui/blob/37ce829f18dd7d0a7219531a4249b664419933ea/apps/www/registry/magicui/dither-field.tsx",
+  "license": "MIT License\n\nCopyright (c) Magic UI\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n",
+  "entry": "component.tsx",
+  "demo": "export { default } from \"./demo\";",
+  "dependencies": {
+    "clsx": "2.1.1",
+    "tailwind-merge": "2.6.0"
+  },
+  "files": [
+    "component.tsx",
+    "demo.tsx",
+    "lib/utils.ts",
+    "preview.css",
+    "LICENSE.txt",
+    "PROVENANCE.json",
+    "upstream/component.tsx.txt"
+  ]
+}
+

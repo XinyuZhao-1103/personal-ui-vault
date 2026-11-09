@@ -1,0 +1,10 @@
+.git
+**/node_modules
+**/data
+**/.env
+**/.env.*
+**/dist
+**/generated
+.taste-skill
+**/test-results
+work
