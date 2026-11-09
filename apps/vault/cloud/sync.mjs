@@ -41,7 +41,7 @@ async function* recentComponents(repository, directory, config, env, observed) {
       for (let page = 1; page <= 30; page++) {
         const commit = await github(`/repos/${repository}/commits/${entry.sha}?per_page=100&page=${page}`, config, env)
         const files = commit.files || []
-        for (const item of files.toSorted((a, b) => a.filename.localeCompare(b.filename))) {
+        for (const item of [...files].sort((a, b) => a.filename.localeCompare(b.filename))) {
           if (item.previous_filename) seen.add(item.previous_filename)
           if (seen.has(item.filename)) continue
           seen.add(item.filename)
@@ -128,6 +128,7 @@ export async function syncSources(store, config, env, options = {}) {
         if (observed.shortfall && !observed.exhausted) throw new AppError("达到提交扫描上限，仍未补足目标数量", 422)
         await store.statement("INSERT OR REPLACE INTO sync_state VALUES(?,?)", `source:${source.repository}`, JSON.stringify(observed)).run()
       } catch (error) {
+        console.error(JSON.stringify({ event: "sync_source_failed", repository: source.repository, errorType: error.name, message: error.message?.slice(0, 1000) }))
         observed.shortfall = Math.max(0, observed.target - observed.selected)
         summary.failures.push({ repository: source.repository, error: error instanceof AppError ? error.message : "来源处理失败" })
       }
