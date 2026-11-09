@@ -25,6 +25,7 @@ jobs:
           cache-dependency-path: apps/vault/package-lock.json
       - run: npm ci
       - run: node scripts/build-parser.mjs
+      - run: npx playwright install --with-deps chromium
       - name: 采集、隔离编译并写入组件库
         run: node scripts/sync-cloud.mjs
         env:

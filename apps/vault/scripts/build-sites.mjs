@@ -24,14 +24,14 @@ await mkdir(`${output}/client/previews`, { recursive: true })
 await copyFile("node_modules/esbuild-wasm/esbuild.wasm", `${output}/client/compiler/esbuild.wasm`)
 await copyFile("node_modules/@tailwindcss/browser/dist/index.global.js", `${output}/client/compiler/tailwind.js`)
 await copyFile("cloud/theme.css", `${output}/client/compiler/theme.css`)
-const packages = ["react", "react/jsx-runtime", "react/jsx-dev-runtime", "react-dom", "react-dom/client", "lucide-react", "motion/react", "clsx", "tailwind-merge", "class-variance-authority", "@radix-ui/react-slot"]
+const packages = ["react", "react/jsx-runtime", "react/jsx-dev-runtime", "react-dom", "react-dom/client", "lucide-react", "motion/react", "clsx", "tailwind-merge", "class-variance-authority", "@radix-ui/react-slot", "react-use-measure"]
 const entries = {}
 const dependencies = {}
 for (const [index, name] of packages.entries()) {
   const exports = await import(name)
   const named = Object.keys(exports).filter(key => key !== "default" && /^[A-Za-z_$][\w$]*$/.test(key))
   const entry = `generated/dependency-${index}.mjs`
-  const hasDefault = ["react", "react/jsx-runtime", "react/jsx-dev-runtime", "react-dom", "react-dom/client", "clsx"].includes(name)
+  const hasDefault = ["react", "react/jsx-runtime", "react/jsx-dev-runtime", "react-dom", "react-dom/client", "clsx", "react-use-measure"].includes(name)
   await writeFile(entry, `${named.length ? `export {${named.join(",")}} from ${JSON.stringify(name)};` : ""}${hasDefault ? `export {default} from ${JSON.stringify(name)};` : ""}`)
   entries[`dependency-${index}`] = entry
   dependencies[name] = `/compiler/deps/dependency-${index}.js`

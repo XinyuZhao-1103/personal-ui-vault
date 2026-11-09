@@ -16,6 +16,7 @@ const allowed = new Set([
   "tailwind-merge",
   "class-variance-authority",
   "@radix-ui/react-slot",
+  "react-use-measure",
 ])
 const colors = Object.fromEntries(
   [

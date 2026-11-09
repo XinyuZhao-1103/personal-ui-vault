@@ -79,11 +79,11 @@ async function route(request, env, config) {
   if (path === "/api/sync/publish" && request.method === "POST") return json(await publishCandidate(body, store, config, env))
   if (path === "/api/sync/candidates" && request.method === "GET") {
     const after = z.string().max(500).default("").parse(url.searchParams.get("after") || undefined)
-    return json({ items: (await store.statement("SELECT id,document FROM sync_candidates WHERE status='pending' AND id>? ORDER BY id LIMIT ?", after, config.syncBatchSize).all()).results })
+    return json({ items: (await store.statement("SELECT id,document FROM sync_candidates WHERE (status IN ('pending','failed') OR (status='imported' AND json_extract(document,'$.demo')='')) AND id>? ORDER BY id LIMIT ?", after, config.syncBatchSize).all()).results })
   }
   if (path === "/api/sync/reject" && request.method === "POST") {
     const input = z.object({ candidateId: z.string().max(500), reason: z.string().max(1000) }).parse(body)
-    await store.statement("UPDATE sync_candidates SET status='failed',reason=?,updated_at=? WHERE id=? AND status='pending'", input.reason, new Date().toISOString(), input.candidateId).run()
+    await store.statement("UPDATE sync_candidates SET status='failed',reason=?,updated_at=? WHERE id=? AND status<>'imported'", input.reason, new Date().toISOString(), input.candidateId).run()
     return json({ success: true })
   }
   if (path === "/api/catalog/bootstrap" && request.method === "POST") {

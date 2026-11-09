@@ -88,11 +88,13 @@ export async function syncSources(store, config, env) {
 }
 
 export async function publishCandidate(body, store, config, env) {
-  const input = z.object({ candidateId: z.string().max(500), previewGzip: z.string().max(1200000) }).parse(body)
+  const input = z.object({ candidateId: z.string().max(500), previewGzip: z.string().max(1200000), document: z.unknown().optional() }).parse(body)
   const candidate = await store.statement("SELECT * FROM sync_candidates WHERE id=?", input.candidateId).first()
   if (!candidate) throw new AppError("候选组件不存在", 404)
-  if (candidate.status === "imported") return { status: "unchanged" }
-  const document = validateComponent(JSON.parse(candidate.document), config.maxBytes)
+  const original = validateComponent(JSON.parse(candidate.document), config.maxBytes)
+  const document = validateComponent(input.document || original, config.maxBytes)
+  if (document.slug !== original.slug || document.source !== original.source || document.license !== original.license)
+    throw new AppError("适配代码需要保留原组件标识、来源与许可", 422)
   const previewStream = new Blob([Buffer.from(input.previewGzip, "base64")]).stream().pipeThrough(new DecompressionStream("gzip"))
   const reader = previewStream.getReader()
   const chunks = []
@@ -111,6 +113,7 @@ export async function publishCandidate(body, store, config, env) {
   const digest = await documentHash(document)
   const existing = await store.statement("SELECT id FROM components WHERE slug=?", document.slug).first()
   const current = existing ? await store.get(existing.id) : null
+  if (current && await documentHash(current) === digest) return { status: "unchanged", id: current.id, revision: current.revision, readback: "verified" }
   if (current) {
     const previous = await store.statement("SELECT value FROM sync_state WHERE key=?", `managed:${current.id}`).first()
     if (!previous || previous.value !== await documentHash(current)) throw new AppError("组件已有用户修改，已保留当前内容并留在候选区", 409)
@@ -119,9 +122,11 @@ export async function publishCandidate(body, store, config, env) {
   const saved = current ? await store.update(current.id, document, current.revision) : (await store.createMany([document]))[0]
   await store.db.batch([
     store.statement("INSERT OR REPLACE INTO sync_state VALUES(?,?)", `managed:${saved.id}`, digest),
-    store.statement("UPDATE sync_candidates SET status='imported',reason='隔离编译通过，已入库',updated_at=? WHERE id=?", new Date().toISOString(), input.candidateId),
+    store.statement("UPDATE sync_candidates SET status='imported',reason='隔离编译与浏览器验证通过，已入库',document=?,updated_at=? WHERE id=?", JSON.stringify(document), new Date().toISOString(), input.candidateId),
   ])
-  return { status: "imported", id: saved.id, revision: saved.revision }
+  const persisted = await store.get(saved.id, saved.revision)
+  if (await documentHash(persisted) !== digest) throw new AppError("写入读回校验失败", 500)
+  return { status: "imported", id: persisted.id, revision: persisted.revision, readback: "verified" }
 }
 
 export async function handleMcp(body, store, config, env) {
