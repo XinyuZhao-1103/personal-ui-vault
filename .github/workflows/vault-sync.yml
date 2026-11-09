@@ -31,3 +31,4 @@ jobs:
         env:
           VAULT_SITE_URL: ${{ vars.VAULT_SITE_URL }}
           VAULT_SITE_SERVICE_TOKEN: ${{ secrets.VAULT_SITE_SERVICE_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}

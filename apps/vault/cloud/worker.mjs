@@ -75,7 +75,11 @@ async function route(request, env, config) {
     }
   }
   if (path === "/mcp") return handleMcp(body, store, config, env)
-  if (path === "/api/sync/run" && request.method === "POST") return json(await syncSources(store, config, env))
+  if (path === "/api/sync/run" && request.method === "POST") {
+    const input = z.object({ githubToken: z.string().min(20).max(1000).optional() }).parse(body)
+    // Actions 临时只读凭据仅用于本次公开来源访问，不保存到数据库或日志。
+    return json(await syncSources(store, config, { ...env, GITHUB_TOKEN: input.githubToken || env.GITHUB_TOKEN }))
+  }
   if (path === "/api/sync/publish" && request.method === "POST") return json(await publishCandidate(body, store, config, env))
   if (path === "/api/sync/candidates" && request.method === "GET") {
     const after = z.string().max(500).default("").parse(url.searchParams.get("after") || undefined)

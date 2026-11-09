@@ -12,7 +12,7 @@ Sites 必须保持仅所有者访问。平台负责 ChatGPT 登录，后端根�
 
 Agent Token 只有 GET 权限。私有站点的外部调用同时需要平台服务访问凭据。真实 `.env`、数据库、Token 和运行产物均不提交。
 
-GitHub Actions 使用仓库 Secret `VAULT_SITE_SERVICE_TOKEN` 保存平台服务凭据，变量 `VAULT_SITE_URL` 保存站点 HTTPS 地址。服务凭据失效或轮换后需同步更新 Secret。
+GitHub Actions 使用仓库 Secret `VAULT_SITE_SERVICE_TOKEN` 保存平台服务凭据，变量 `VAULT_SITE_URL` 保存站点 HTTPS 地址。服务凭据失效或轮换后需同步更新 Secret。来源访问使用每次运行自动签发的只读 `GITHUB_TOKEN`，通过 HTTPS 请求体交给站点并仅在本次请求内使用，避免匿名共享配额限制，不落库、不写日志。
 
 ## 定时同步
 

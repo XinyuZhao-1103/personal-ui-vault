@@ -15,7 +15,7 @@ async function api(path, method = "GET", body) {
   return value
 }
 console.log(JSON.stringify({ event: "bootstrap", ...await api("/api/catalog/bootstrap", "POST", {}) }))
-const discovery = await api("/api/sync/run", "POST", {})
+const discovery = await api("/api/sync/run", "POST", { githubToken: process.env.GITHUB_TOKEN })
 console.log(JSON.stringify({ event: "discovered", ...discovery }))
 let cursor = ""
 let processed = 0
