@@ -20,7 +20,7 @@ console.log(JSON.stringify({ event: "discovered", ...discovery }))
 let cursor = ""
 let processed = 0
 let failed = 0
-const browser = await chromium.launch({ headless: true, ...(process.platform === "win32" ? { channel: "msedge" } : {}) })
+const browser = await chromium.launch({ headless: true, channel: process.platform === "win32" ? "msedge" : "chrome" })
 async function verifyPreview(html) {
   const page = await browser.newPage()
   const errors = []
