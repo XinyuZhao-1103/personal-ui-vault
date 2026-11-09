@@ -2,7 +2,7 @@
 
 基于 `serafimcloud/21st` 的个人组件资产库，保留复用的上游解析器与 MIT 许可证。本应用直接打包 `apps/web/lib/parsers.ts`，沿用组件、演示、合集及 Registry 分发约定。
 
-Docker 版使用 React、Vite、Express 与 SQLite。ChatGPT Sites 版使用 Worker、D1 与 R2，云端部署、访问控制和周一三五自动维护说明见 [CLOUD.md](./CLOUD.md)。
+Docker 版使用 React、Vite、Express 与 SQLite。ChatGPT Sites 版使用 Worker、D1 与 R2，云端部署、访问控制和周一、三、五、周日自动维护说明见 [CLOUD.md](./CLOUD.md)。
 
 ## 功能
 

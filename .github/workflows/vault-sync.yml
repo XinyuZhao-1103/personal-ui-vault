@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   schedule:
     # UTC 00:00 对应北京时间 08:00，GitHub 排队可能造成延迟。
-    - cron: '0 0 * * 1,3,5'
+    - cron: '0 0 * * 0,1,3,5'
 permissions:
   contents: read
 concurrency:

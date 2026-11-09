@@ -16,7 +16,7 @@ GitHub Actions 使用仓库 Secret `VAULT_SITE_SERVICE_TOKEN` 保存平台服务
 
 ## 定时同步
 
-工作流位于 `.github/workflows/vault-sync.yml`，每周一、三、五 UTC 00:00 执行，对应北京时间 08:00。GitHub 排队可能使实际开始时间延迟，也支持 Actions 页面手动执行。
+工作流位于 `.github/workflows/vault-sync.yml`，每周一、三、五、周日 UTC 00:00 执行，对应北京时间 08:00。GitHub 排队可能使实际开始时间延迟，也支持 Actions 页面手动执行。
 
 每轮检查 shadcn-ui/ui、magicuidesign/magicui 和 ibelick/motion-primitives 的组件目录，核对当前 MIT 许可并记录仓库星数，收集最新变更提交中每来源最多 5 个 TSX 组件。每轮处理最多 30 个候选。此范围为有界采集，尚未实现所有历史变更的无遗漏回补。
 
