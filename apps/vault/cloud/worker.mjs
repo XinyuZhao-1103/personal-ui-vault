@@ -84,7 +84,7 @@ async function route(request, env, config) {
     const input = z.object({
       githubToken: z.string().min(20).max(1000).optional(),
       sourceLimits: z.record(z.enum(["shadcn-ui/ui", "magicuidesign/magicui", "ibelick/motion-primitives"]), z.number().int().min(0).max(config.syncBatchSize)).optional(),
-      excludeCandidateIds: z.array(z.string().min(1).max(500)).max(30).optional(),
+      excludeCandidateIds: z.array(z.string().min(1).max(500)).max(100).optional(),
     }).parse(body)
     // Actions 临时只读凭据仅用于本次公开来源访问，不保存到数据库或日志。
     return json(await syncSources(store, config, { ...env, GITHUB_TOKEN: input.githubToken || env.GITHUB_TOKEN }, input))

@@ -5,6 +5,8 @@ import { chromium } from "@playwright/test"
 
 const origin = new URL(process.env.VAULT_SITE_URL).origin
 const token = process.env.VAULT_SITE_SERVICE_TOKEN
+const maxAttempts = Number(process.env.VAULT_SYNC_MAX_ATTEMPTS || 60)
+if (!Number.isInteger(maxAttempts) || maxAttempts < 9 || maxAttempts > 100) throw new Error("VAULT_SYNC_MAX_ATTEMPTS 必须是 9–100 的整数")
 if (!token) throw new Error("缺少 VAULT_SITE_SERVICE_TOKEN")
 if (!origin.startsWith("https://")) throw new Error("VAULT_SITE_URL 必须使用 HTTPS")
 async function api(path, method = "GET", body) {
@@ -25,6 +27,14 @@ const importedBySource = Object.fromEntries(discovery.sources.map(source => [sou
 const targets = Object.fromEntries(discovery.sources.map(source => [source.repository, source.target]))
 const attempted = []
 let sourceFailures = discovery.failures.length
+const demos = {
+  "magic-animated-circular-progress-bar": 'import {AnimatedCircularProgressBar} from "./component";export default function Demo(){return <AnimatedCircularProgressBar max={100} min={0} value={65} gaugePrimaryColor="#171717" gaugeSecondaryColor="#e5e5e5"/>}',
+  "motion-infinite-slider": 'import {InfiniteSlider} from "./component";export default function Demo(){return <InfiniteSlider><div className="rounded-xl bg-neutral-100 p-8">设计</div><div className="rounded-xl bg-neutral-900 p-8 text-white">组件</div><div className="rounded-xl bg-neutral-100 p-8">复用</div></InfiniteSlider>}',
+  "motion-in-view": 'import {InView} from "./component";export default function Demo(){return <InView><div className="rounded-xl bg-neutral-100 p-8">进入视口，内容渐入</div></InView>}',
+  "motion-progressive-blur": 'import {ProgressiveBlur} from "./component";export default function Demo(){return <div style={{position:"relative",width:320,height:160}}><p className="p-6 text-xl">渐进模糊，让内容自然过渡。</p><ProgressiveBlur className="absolute inset-0"/></div>}',
+  "motion-text-effect": 'import {TextEffect} from "./component";export default function Demo(){return <TextEffect per="char" preset="fade-in-blur">为下一个项目，留下好设计。</TextEffect>}',
+  "magic-cool-mode": 'import {CoolMode} from "./component";export default function Demo(){return <CoolMode><button className="rounded-lg bg-neutral-900 px-6 py-3 text-white">点击释放粒子</button></CoolMode>}',
+}
 const browser = await chromium.launch({ headless: true, channel: process.platform === "win32" ? "msedge" : "chrome" })
 async function verifyPreview(html) {
   const page = await browser.newPage()
@@ -45,20 +55,24 @@ async function verifyPreview(html) {
   } finally { await page.close() }
 }
 // 只处理本轮按新到旧选择的候选，旧积压不占各来源的名额。
-while (discovery.candidateIds.length && processed < 30) {
+while (discovery.candidateIds.length && processed < maxAttempts) {
   const query = new URLSearchParams(discovery.candidateIds.map(id => ["id", id]))
   const { items } = await api(`/api/sync/candidates?${query}`)
   if (items.length !== discovery.candidateIds.length) throw new Error("本轮候选读取不完整，请检查同步状态")
   for (const candidate of items) {
-    if (processed >= 30) break
+    if (processed >= maxAttempts) break
     processed++
     attempted.push(candidate.id)
     try {
       const document = validateComponent(JSON.parse(candidate.document), 1048576)
-      if (!document.demo && document.slug === "magic-animated-circular-progress-bar")
-        document.demo = 'import {AnimatedCircularProgressBar} from "./component";export default function Demo(){return <AnimatedCircularProgressBar max={100} min={0} value={65} gaugePrimaryColor="#171717" gaugeSecondaryColor="#e5e5e5"/>}'
-      if (!document.demo && document.slug === "motion-infinite-slider")
-        document.demo = 'import {InfiniteSlider} from "./component";export default function Demo(){return <InfiniteSlider><div className="rounded-xl bg-neutral-100 p-8">设计</div><div className="rounded-xl bg-neutral-900 p-8 text-white">组件</div><div className="rounded-xl bg-neutral-100 p-8">复用</div></InfiniteSlider>}'
+      // shadcn 源仓库以工作区包 cn 提供工具函数，导出包使用现有本地工具文件。
+      if (candidate.id.startsWith("shadcn-ui/ui:")) {
+        document.files = document.files.map(file => file.path === "component.tsx" ? { ...file, content: file.content.replace(/from (["'])cn\1/g, 'from "@/lib/utils"') } : file)
+        delete document.dependencies.cn
+        document.dependencies.clsx = "2.1.1"
+        document.dependencies["tailwind-merge"] = "2.6.0"
+      }
+      document.demo ||= demos[document.slug] || ""
       const html = await makePreview(document, 30000)
       await verifyPreview(html)
       const result = await api("/api/sync/publish", "POST", { candidateId: candidate.id, document, previewGzip: gzipSync(html).toString("base64") })
@@ -76,7 +90,7 @@ while (discovery.candidateIds.length && processed < 30) {
     }
   }
   const sourceLimits = Object.fromEntries(Object.entries(targets).map(([repository, target]) => [repository, Math.max(0, target - importedBySource[repository])]))
-  if (processed >= 30 || Object.values(sourceLimits).every(remaining => remaining === 0)) break
+  if (processed >= maxAttempts || Object.values(sourceLimits).every(remaining => remaining === 0)) break
   discovery = await api("/api/sync/run", "POST", { githubToken: process.env.GITHUB_TOKEN, sourceLimits, excludeCandidateIds: attempted })
   sourceFailures += discovery.failures.length
   console.log(JSON.stringify({ event: "refill", ...discovery }))
