@@ -16,6 +16,12 @@ function fixture(t, { count = 16, unavailable = false, largeCommit = false } = {
   const sqlite = new DatabaseSync(":memory:")
   sqlite.exec(readFileSync(new URL("../drizzle/0000_cloud_vault.sql", import.meta.url), "utf8"))
   const store = cloudStore(identityDatabase(sqlite))
+  const statement = store.statement
+  store.statement = (sql, ...args) => {
+    // 云端 D1 会拒绝较长的 LIKE/GLOB 模式，真实来源 URL 超过该上限。
+    assert.doesNotMatch(sql, /\b(LIKE|GLOB)\b/i)
+    return statement(sql, ...args)
+  }
   const requests = []
   const fetch = globalThis.fetch
   globalThis.fetch = async input => {

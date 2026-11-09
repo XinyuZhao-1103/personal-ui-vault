@@ -57,10 +57,12 @@ async function* recentComponents(repository, directory, config, env, observed) {
 }
 
 async function collectedComponent(store, slug, repository, sourcePath) {
-  const escaped = value => value.replace(/[\\%_]/g, character => `\\${character}`)
+  const suffix = `/${sourcePath}`
+  // D1 限制 LIKE 模式长度，来源路径改用精确前后缀比较。
   return store.statement(`SELECT c.id FROM components c JOIN revisions r ON r.component_id=c.id AND r.revision=c.revision
-    WHERE c.slug=? OR json_extract(r.document,'$.source') LIKE ? ESCAPE '\\' OR json_extract(r.document,'$.source') LIKE ? ESCAPE '\\' LIMIT 1`,
-  slug, `https://github.com/${escaped(repository)}/blob/%/${escaped(sourcePath)}`, `https://raw.githubusercontent.com/${escaped(repository)}/%/${escaped(sourcePath)}`).first()
+    WHERE c.slug=? OR ((instr(json_extract(r.document,'$.source'),?)=1 OR instr(json_extract(r.document,'$.source'),?)=1)
+      AND substr(json_extract(r.document,'$.source'),?)=?) LIMIT 1`,
+  slug, `https://github.com/${repository}/blob/`, `https://raw.githubusercontent.com/${repository}/`, -suffix.length, suffix).first()
 }
 
 export async function syncSources(store, config, env, options = {}) {
