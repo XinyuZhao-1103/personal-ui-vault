@@ -3,6 +3,7 @@ import assert from "node:assert/strict"
 import { DatabaseSync } from "node:sqlite"
 import { readFileSync } from "node:fs"
 import { createHash } from "node:crypto"
+import { gzipSync } from "node:zlib"
 import { identityDatabase } from "../server/identity-db.mjs"
 import { cloudStore } from "../cloud/store.mjs"
 import { syncSources, publishCandidate } from "../cloud/sync.mjs"
@@ -117,4 +118,25 @@ test("来源依赖失败可观测", async t => {
   assert.equal(result.status, "partial")
   assert.equal(result.failures.length, sources.length)
   assert.equal(await store.statement("SELECT value FROM sync_state WHERE key='sync_lock'").first(), null)
+})
+
+test("精选候选经过发布入口保存、读回及幂等重试，许可变更后拒绝旧候选", async t => {
+  const { store } = fixture(t)
+  const result = await syncSources(store, config, {})
+  const previewGzip = gzipSync('<!doctype html><meta http-equiv="Content-Security-Policy" content="default-src none">').toString("base64")
+  const writes = []
+  const env = { BUCKET: { put: async (key, value) => { writes.push({ key, value }) } } }
+  const input = { candidateId: result.candidateIds[0], previewGzip }
+  const saved = await publishCandidate(input, store, config, env)
+  assert.equal(saved.status, "imported")
+  assert.equal(saved.readback, "verified")
+  assert.equal(writes.length, 1)
+  const repeated = await publishCandidate(input, store, config, env)
+  assert.equal(repeated.status, "skipped")
+  assert.equal(repeated.id, saved.id)
+  assert.equal(writes.length, 1)
+  const other = result.candidateIds[1]
+  const row = await store.statement("SELECT repository FROM sync_candidates WHERE id=?", other).first()
+  syncPolicy.sources.find(source => source.repository === row.repository).licenseSha256 = "0".repeat(64)
+  await assert.rejects(publishCandidate({ candidateId: other, previewGzip }, store, config, env), /许可与当前精选策略不一致/)
 })
