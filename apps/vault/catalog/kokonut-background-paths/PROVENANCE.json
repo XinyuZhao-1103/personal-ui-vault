@@ -1,0 +1,13 @@
+{
+  "repository": "kokonut-labs/kokonutui",
+  "path": "components/kokonutui/background-paths.tsx",
+  "commit": "9976111a38abe05a47229867611db02646b597ef",
+  "lastModifiedCommit": "dd1237fd589d7e91629cb3abb67670d37e232e04",
+  "modifiedAt": "2026-10-22T17:10:32Z",
+  "collectedAt": "2026-11-10T00:24:35.883Z",
+  "selectionReason": "多层曲线随时间流动并避让鼠标，适合首屏和沉浸式展示区域。",
+  "adaptations": [
+    "补充独立演示，保留原始源码"
+  ],
+  "policy": "curated-v1"
+}

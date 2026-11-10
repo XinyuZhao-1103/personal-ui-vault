@@ -1,0 +1,1 @@
+@keyframes cosmic-spin{to{transform:rotate(360deg)}}@keyframes cosmic-spin-slow{to{transform:rotate(-360deg)}}.animate-cosmic-spin{animation:cosmic-spin 3s linear infinite}.animate-cosmic-spin-slow{animation:cosmic-spin-slow 5s linear infinite}@media(prefers-reduced-motion:reduce){.animate-orbit,.animate-meteor,.animate-cosmic-spin,.animate-cosmic-spin-slow{animation:none}}

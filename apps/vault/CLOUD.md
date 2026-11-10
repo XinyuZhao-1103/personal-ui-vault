@@ -20,13 +20,17 @@ GitHub Actions 使用仓库 Secret `VAULT_SITE_SERVICE_TOKEN` 保存服务凭据
 
 ## 定时同步
 
-工作流位于 `.github/workflows/vault-sync.yml`，每周一、三、五、周日 UTC 00:00 执行，对应北京时间 08:00。GitHub 排队可能使实际开始时间延迟，也支持 Actions 页面手动执行。
+工作流位于 `.github/workflows/vault-sync.yml`，每天 UTC 00:00 执行，对应北京时间 08:00。GitHub 排队可能使实际开始时间延迟，也支持 Actions 页面手动执行。
 
-每轮检查 shadcn-ui/ui、magicuidesign/magicui 和 ibelick/motion-primitives 的组件目录，核对当前 MIT 许可并记录仓库星数。固定本轮提交快照，按最近修改顺序分页向前查找，每来源目标新增 3 个 TSX 组件。按组件标识及来源路径识别已收录组件，跳过后继续补足，源码版本变化也跳过已有组件。每来源默认最多扫描 30 个提交，单轮采集总时限默认 90 秒，达到上限时明确报告未补足。
+来源和精选规则集中在 `catalog/sync-policy.json`，保存启用开关、目录、前缀、许可正文摘要，以及组件名称、分类、筛选说明、完整演示和补充 CSS。当前启用 Magic UI、Motion Primitives、Cult UI 和 Kokonut UI，暂停 shadcn 基础控件的自动采集。每轮核对当前 MIT 许可，许可正文变化时拒绝采集并要求复核。React Bits 当前附带 Commons Clause 的组件再分发限制，不纳入本库的源码导出来源。Aceternity UI 本轮未取得满足本库用途的完整许可与源码验证结果，暂未接入。
+
+在固定来源快照上检查精选文件的最近修改时间，按日期倒序、路径升序排序。每来源默认最多新增 3 个，按组件标识和来源路径跳过已收录内容，数量不足或没有新增均为正常结果。历史优质组件可以补采，日期保留其真实修改时间。已有组件源码变化继续跳过，保持现有去重约定。
+
+自动发布范围限定为精选清单。新发现的组件需要先补充筛选说明、演示及浏览器验收，再进入清单。当前没有自动视觉打分，也不承诺每天都出现新组件。此规则取代按来源固定补满 3 个的旧规则。每来源默认最多检查 30 个精选文件，单轮采集总时限默认 90 秒，达到资源限制仍显式报告失败。
 
 候选组件经过隔离编译、Chromium 渲染和运行异常检查后，上传压缩预览并入库，再读取保存的版本校验内容。无法编译、缺少参数或不支持的依赖留在候选区，工作流返回失败以提供可见提醒。该检查无法替代所有业务交互和视觉质量评审。
 
-已有组件在采集和发布入口均跳过。候选编译或渲染失败时记录原因并继续向前补采，单次 Actions 默认最多验证 60 个候选，通过仓库变量 VAULT_SYNC_MAX_ATTEMPTS 配置，范围 9–100。shadcn 的 cn 工作区导入适配到包内工具文件，原始源码另行保留。运行汇总显示各来源实际新增和缺口，来源耗尽、扫描受限或验证名额耗尽导致不足时工作流返回失败。组件集保持创建时的固定版本。
+已有组件在采集和发布入口均跳过。遗留未精选候选不能通过发布入口。候选编译或渲染失败时记录原因并继续检查其他精选项，单次 Actions 默认最多验证 60 个候选，通过仓库变量 VAULT_SYNC_MAX_ATTEMPTS 配置，范围 9–100。原始源码和许可随组件保留。运行汇总显示各来源实际新增和剩余容量 `remainingCapacity`，数量不足允许成功，来源读取失败、编译或渲染失败、验证预算耗尽则返回失败。组件集保持创建时的固定版本。
 
 在 Actions 中查看运行日志，在 `/api/sync/status` 或站点 MCP 工具中查看采集与候选概况。运行日志不包含服务凭据。
 
@@ -40,8 +44,8 @@ GitHub Actions 使用仓库 Secret `VAULT_SITE_SERVICE_TOKEN` 保存服务凭据
 | VAULT_MAX_PAGE_SIZE | 48 | 12—100，服务端列表页大小上限 |
 | VAULT_MAX_SELECTION | 50 | 1—100，单次选择数量上限 |
 | VAULT_FETCH_TIMEOUT_MS | 10000 | 1000—30000 毫秒，单次来源读取超时 |
-| VAULT_SYNC_BATCH_SIZE | 3 | 1—10，每来源每轮新增目标及候选页大小 |
-| VAULT_SYNC_MAX_COMMITS | 30 | 1—100，每来源扫描提交数上限 |
+| VAULT_SYNC_BATCH_SIZE | 3 | 1—10，每来源每轮新增上限及候选页大小 |
+| VAULT_SYNC_MAX_COMMITS | 30 | 1—100，每来源精选文件检查上限，沿用旧名以兼容既有配置 |
 | VAULT_SYNC_TIMEOUT_MS | 90000 | 10000—100000 毫秒，单轮采集总时限 |
 | VAULT_REGISTRY_HOSTS | ui.shadcn.com,magicui.design,motion-primitives.com,raw.githubusercontent.com | Registry HTTPS 域名白名单，重定向逐跳检查 |
 | VAULT_LOCAL_DEV | false | 仅本地 Worker 测试设为 true，线上保持 false |
@@ -49,7 +53,7 @@ GitHub Actions 使用仓库 Secret `VAULT_SITE_SERVICE_TOKEN` 保存服务凭据
 
 ## 构建与验证
 
-在 `apps/vault` 中执行 `npm ci`、`npm run check`、`npm test` 和 `npm run build:sites`。云端构建输出 `dist-sites`，包含 Worker、静态资源与 10 个初始组件预览。
+在 `apps/vault` 中执行 `npm ci`、`npm run check`、`npm test` 和 `npm run build:sites`。云端构建输出 `dist-sites`，包含 Worker、静态资源与 18 个目录组件预览。
 
 D1 结构迁移位于 `drizzle`，部署时由 Sites 应用。初始数据通过受保护的 `/api/catalog/bootstrap` 幂等导入，不把数据回填放入结构迁移。
 

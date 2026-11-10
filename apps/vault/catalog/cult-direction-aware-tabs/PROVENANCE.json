@@ -1,0 +1,13 @@
+{
+  "repository": "nolly-studio/cult-ui",
+  "path": "apps/www/registry/default/ui/direction-aware-tabs.tsx",
+  "commit": "d71b1428b811c2779d46ea41b7ef8c9f9c9991c2",
+  "lastModifiedCommit": "9197839f337f6cce6879685fb567bdb9b85cb92f",
+  "modifiedAt": "2026-09-30T23:31:41Z",
+  "collectedAt": "2026-11-10T00:24:35.883Z",
+  "selectionReason": "内容根据切换方向滑入，容器高度随内容平滑变化，适合分步介绍。",
+  "adaptations": [
+    "补充独立演示，保留原始源码"
+  ],
+  "policy": "curated-v1"
+}

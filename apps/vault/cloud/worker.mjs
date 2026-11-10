@@ -9,6 +9,7 @@ import { cloudStore } from "./store.mjs"
 import { createIdentity } from "../server/identity.mjs"
 import { authorizeVault } from "../server/access.mjs"
 import { handleMcp, syncSources, publishCandidate, documentHash } from "./sync.mjs"
+import { syncRepositories } from "./sync-policy.mjs"
 import catalog from "../generated/cloud-catalog.json" with { type: "json" }
 
 const json = (value, status = 200) => Response.json(value, { status })
@@ -83,7 +84,7 @@ async function route(request, env, config) {
   if (path === "/api/sync/run" && request.method === "POST") {
     const input = z.object({
       githubToken: z.string().min(20).max(1000).optional(),
-      sourceLimits: z.record(z.enum(["shadcn-ui/ui", "magicuidesign/magicui", "ibelick/motion-primitives"]), z.number().int().min(0).max(config.syncBatchSize)).optional(),
+      sourceLimits: z.record(z.enum(syncRepositories), z.number().int().min(0).max(config.syncBatchSize)).optional(),
       excludeCandidateIds: z.array(z.string().min(1).max(500)).max(100).optional(),
     }).parse(body)
     // Actions 临时只读凭据仅用于本次公开来源访问，不保存到数据库或日志。

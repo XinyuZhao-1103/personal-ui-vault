@@ -31,6 +31,24 @@
       "snapshotCommit": "120f64f6ca60348e251f929e9c81f11ccbe45eda",
       "license": "MIT License\n\nCopyright (c) 2024 ibelick\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\napp/page.tsx\n",
       "licensePath": "LICENCE.md"
+    },
+    {
+      "repository": "nolly-studio/cult-ui",
+      "url": "https://github.com/nolly-studio/cult-ui",
+      "stars": 7058,
+      "starsObservedOn": "2026-11-10",
+      "snapshotCommit": "d71b1428b811c2779d46ea41b7ef8c9f9c9991c2",
+      "license": "MIT License\n\nCopyright (c) 2023 Jordan-Gilliam\n\nPermission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.\n",
+      "licensePath": "LICENSE.md"
+    },
+    {
+      "repository": "kokonut-labs/kokonutui",
+      "url": "https://github.com/kokonut-labs/kokonutui",
+      "stars": 2292,
+      "starsObservedOn": "2026-11-10",
+      "snapshotCommit": "9976111a38abe05a47229867611db02646b597ef",
+      "license": "MIT License\n\nCopyright (c) 2025 kokonutUI\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n",
+      "licensePath": "LICENSE"
     }
   ],
   "components": [
@@ -93,7 +111,63 @@
       "repository": "ibelick/motion-primitives",
       "path": "components/core/transition-panel.tsx",
       "lastModifiedAt": "2025-01-09T15:25:28Z"
+    },
+    {
+      "slug": "magic-border-beam",
+      "repository": "magicuidesign/magicui",
+      "path": "apps/www/registry/magicui/border-beam.tsx",
+      "lastModifiedAt": "2026-07-31T11:41:14Z",
+      "collectedOn": "2026-11-10"
+    },
+    {
+      "slug": "magic-meteors",
+      "repository": "magicuidesign/magicui",
+      "path": "apps/www/registry/magicui/meteors.tsx",
+      "lastModifiedAt": "2026-03-06T10:09:15Z",
+      "collectedOn": "2026-11-10"
+    },
+    {
+      "slug": "magic-orbiting-circles",
+      "repository": "magicuidesign/magicui",
+      "path": "apps/www/registry/magicui/orbiting-circles.tsx",
+      "lastModifiedAt": "2026-03-06T10:09:15Z",
+      "collectedOn": "2026-11-10"
+    },
+    {
+      "slug": "cult-bg-animated-gradient",
+      "repository": "nolly-studio/cult-ui",
+      "path": "apps/www/registry/default/ui/bg-animated-gradient.tsx",
+      "lastModifiedAt": "2026-09-30T23:31:41Z",
+      "collectedOn": "2026-11-10"
+    },
+    {
+      "slug": "cult-cosmic-button",
+      "repository": "nolly-studio/cult-ui",
+      "path": "apps/www/registry/default/ui/cosmic-button.tsx",
+      "lastModifiedAt": "2026-09-30T23:31:41Z",
+      "collectedOn": "2026-11-10"
+    },
+    {
+      "slug": "cult-direction-aware-tabs",
+      "repository": "nolly-studio/cult-ui",
+      "path": "apps/www/registry/default/ui/direction-aware-tabs.tsx",
+      "lastModifiedAt": "2026-09-30T23:31:41Z",
+      "collectedOn": "2026-11-10"
+    },
+    {
+      "slug": "kokonut-background-paths",
+      "repository": "kokonut-labs/kokonutui",
+      "path": "components/kokonutui/background-paths.tsx",
+      "lastModifiedAt": "2026-10-22T17:10:32Z",
+      "collectedOn": "2026-11-10"
+    },
+    {
+      "slug": "kokonut-glitch-text",
+      "repository": "kokonut-labs/kokonutui",
+      "path": "components/kokonutui/glitch-text.tsx",
+      "lastModifiedAt": "2026-10-14T08:29:23Z",
+      "collectedOn": "2026-11-10"
     }
-  ]
+  ],
+  "updatedOn": "2026-11-10"
 }
-

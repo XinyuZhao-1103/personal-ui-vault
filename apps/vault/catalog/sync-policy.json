@@ -1,0 +1,116 @@
+{
+  "sources": [
+    {
+      "repository": "shadcn-ui/ui",
+      "directory": "apps/v4/registry/new-york-v4/ui",
+      "prefix": "shadcn",
+      "licensePath": "LICENSE.md",
+      "enabled": false,
+      "reviews": {},
+      "licenseSha256": "1564074e13439397221ffd522e2e504d56561994a23d371aa5e3ad43e4f5423f"
+    },
+    {
+      "repository": "magicuidesign/magicui",
+      "directory": "apps/www/registry/magicui",
+      "prefix": "magic",
+      "licensePath": "LICENSE.md",
+      "enabled": true,
+      "reviews": {
+        "border-beam.tsx": {
+          "name": "Magic UI · 流光边框卡片",
+          "category": "卡片",
+          "reason": "沿卡片轮廓移动的光束，为展示卡片提供有辨识度的动态边界。",
+          "demo": "import {BorderBeam} from \"./component\";export default function Demo(){return <div className=\"relative mx-auto flex h-64 w-full max-w-md flex-col justify-center overflow-hidden rounded-2xl border bg-neutral-950 p-8 text-white\"><p className=\"text-xs uppercase tracking-widest text-cyan-300\">LIGHT IN MOTION</p><h2 className=\"mt-4 text-3xl font-semibold\">让边界流动起来</h2><p className=\"mt-3 text-neutral-400\">适用于产品展示与重点功能卡片。</p><BorderBeam size={180} duration={6}/></div>}",
+          "css": "[style*=\"--border-beam-width\"]{border:var(--border-beam-width) solid transparent;mask:linear-gradient(#000 0 0) padding-box,linear-gradient(#000 0 0) border-box;mask-composite:exclude}[style*=\"--color-from\"]{background:linear-gradient(to left,var(--color-from),var(--color-to),transparent)}@media(prefers-reduced-motion:reduce){.animate-orbit,.animate-meteor,.animate-cosmic-spin,.animate-cosmic-spin-slow{animation:none}}"
+        },
+        "orbiting-circles.tsx": {
+          "name": "Magic UI · 轨道环绕导航",
+          "category": "导航",
+          "reason": "多个图标沿同心轨道运动，适合展示工具生态与集成关系。",
+          "demo": "import {OrbitingCircles} from \"./component\";export default function Demo(){return <div className=\"relative mx-auto flex h-96 w-full max-w-md items-center justify-center overflow-hidden rounded-2xl bg-neutral-950 text-white\"><span className=\"text-3xl font-semibold\">拾 UI</span><OrbitingCircles radius={120} iconSize={44}><span className=\"rounded-xl bg-indigo-500 p-3\">✦</span><span className=\"rounded-xl bg-cyan-600 p-3\">◈</span><span className=\"rounded-xl bg-violet-600 p-3\">◎</span></OrbitingCircles></div>}",
+          "css": "@keyframes orbit{0%{transform:rotate(calc(var(--angle)*1deg)) translateY(calc(var(--radius)*1px)) rotate(calc(var(--angle)*-1deg))}100%{transform:rotate(calc(var(--angle)*1deg + 360deg)) translateY(calc(var(--radius)*1px)) rotate(calc(var(--angle)*-1deg - 360deg))}}.animate-orbit{animation:orbit calc(var(--duration)*1s) linear infinite}[style*=\"--icon-size\"]{width:var(--icon-size);height:var(--icon-size)}@media(prefers-reduced-motion:reduce){.animate-orbit,.animate-meteor,.animate-cosmic-spin,.animate-cosmic-spin-slow{animation:none}}"
+        },
+        "meteors.tsx": {
+          "name": "Magic UI · 流星背景卡片",
+          "category": "卡片",
+          "reason": "斜向流星划过暗色背景，具有明显空间层次和持续动态效果。",
+          "demo": "import {Meteors} from \"./component\";export default function Demo(){return <div className=\"relative mx-auto flex h-72 w-full max-w-md flex-col justify-end overflow-hidden rounded-2xl bg-slate-950 p-8 text-white\"><Meteors number={30} minDuration={2} maxDuration={4}/><h2 className=\"relative text-3xl font-semibold\">穿过夜空</h2><p className=\"relative mt-3 text-slate-400\">给下一次发布留一点想象。</p></div>}",
+          "css": "@keyframes meteor{0%{transform:rotate(var(--angle)) translateX(0);opacity:1}70%{opacity:1}100%{transform:rotate(var(--angle)) translateX(500px);opacity:0}}.animate-meteor{animation:meteor 5s linear infinite}.animate-meteor>div{width:50px;background:linear-gradient(to right,#a1a1aa,transparent);z-index:auto}@media(prefers-reduced-motion:reduce){.animate-orbit,.animate-meteor,.animate-cosmic-spin,.animate-cosmic-spin-slow{animation:none}}"
+        }
+      },
+      "licenseSha256": "0147b84235ed916b8b4e89c1f80655351c5afe7d211b629be61f553a227b34ba"
+    },
+    {
+      "repository": "ibelick/motion-primitives",
+      "directory": "components/core",
+      "prefix": "motion",
+      "licensePath": "LICENCE.md",
+      "enabled": true,
+      "reviews": {
+        "text-scramble.tsx": {
+          "name": "Motion Primitives · 字符解码标题",
+          "category": "其他",
+          "reason": "字符逐步解码成完整文字，适合技术产品标题与状态反馈。",
+          "demo": "import {useState} from \"react\";import {TextScramble} from \"./component\";export default function Demo(){const[n,setN]=useState(0);return <div className=\"rounded-2xl bg-neutral-950 p-10 text-white\"><TextScramble key={n} className=\"text-3xl font-mono\">DESIGN IN MOTION</TextScramble><button className=\"mt-8 rounded-full border px-4 py-2\" onClick={()=>setN(n+1)}>重新解码</button></div>}",
+          "css": ""
+        }
+      },
+      "licenseSha256": "f668f5ef3635eb906f10b1eea9a32e449eb6e1a183ab6879ef6d56c0980dd2f3"
+    },
+    {
+      "repository": "nolly-studio/cult-ui",
+      "directory": "apps/www/registry/default/ui",
+      "prefix": "cult",
+      "licensePath": "LICENSE.md",
+      "enabled": true,
+      "reviews": {
+        "cosmic-button.tsx": {
+          "name": "Cult UI · 宇宙光环按钮",
+          "category": "按钮",
+          "reason": "双层反向旋转的光环边框与深色按钮表面形成清晰层次。",
+          "demo": "import {CosmicButton} from \"./component\";export default function Demo(){return <div className=\"flex min-h-64 items-center justify-center rounded-2xl bg-neutral-950\"><CosmicButton as=\"button\">开启探索</CosmicButton></div>}",
+          "css": "@keyframes cosmic-spin{to{transform:rotate(360deg)}}@keyframes cosmic-spin-slow{to{transform:rotate(-360deg)}}.animate-cosmic-spin{animation:cosmic-spin 3s linear infinite}.animate-cosmic-spin-slow{animation:cosmic-spin-slow 5s linear infinite}@media(prefers-reduced-motion:reduce){.animate-orbit,.animate-meteor,.animate-cosmic-spin,.animate-cosmic-spin-slow{animation:none}}"
+        },
+        "direction-aware-tabs.tsx": {
+          "name": "Cult UI · 方向感知选项卡",
+          "category": "导航",
+          "reason": "内容根据切换方向滑入，容器高度随内容平滑变化，适合分步介绍。",
+          "demo": "import {DirectionAwareTabs} from \"./component\";const tabs=[{id:0,label:\"发现\",content:<div className=\"p-5\"><h3 className=\"text-xl font-semibold\">收集有辨识度的设计</h3><p className=\"mt-3\">从交互和视觉细节开始。</p></div>},{id:1,label:\"整理\",content:<div className=\"p-5\"><h3 className=\"text-xl font-semibold\">把灵感整理成资产</h3><p className=\"mt-3\">保留来源、演示与版本。</p></div>},{id:2,label:\"复用\",content:<div className=\"p-5\"><h3 className=\"text-xl font-semibold\">带到下一个项目</h3><p className=\"mt-3\">选择组件，导出完整源码。</p></div>}];export default function Demo(){return <div className=\"mx-auto w-full max-w-lg rounded-2xl bg-stone-100 p-6\"><DirectionAwareTabs tabs={tabs}/></div>}",
+          "css": ""
+        },
+        "bg-animated-gradient.tsx": {
+          "name": "Cult UI · 呼吸渐变背景",
+          "category": "卡片",
+          "reason": "多组径向渐变在位置和色彩间平滑过渡，形成柔和的环境光背景。",
+          "demo": "import {GradientAnimation} from \"./component\";const gradients=[{centerX:10,centerY:20,stops:[{color:\"#312e81\",position:0},{color:\"#09090b\",position:80}]},{centerX:90,centerY:80,stops:[{color:\"#0e7490\",position:0},{color:\"#09090b\",position:80}]}];export default function Demo(){return <div className=\"relative mx-auto flex h-72 w-full max-w-lg items-center overflow-hidden rounded-2xl bg-neutral-950 p-10 text-white\"><GradientAnimation gradients={gradients} animationDuration={5}/><div className=\"relative\"><p className=\"text-xs tracking-widest\">ATMOSPHERE</p><h2 className=\"mt-4 text-4xl font-semibold\">让色彩呼吸</h2></div></div>}",
+          "css": ""
+        }
+      },
+      "licenseSha256": "78045e58dfd5f039ad350ad293da2ad9a2c0362b82dadb069b1c10be382ddac7"
+    },
+    {
+      "repository": "kokonut-labs/kokonutui",
+      "directory": "components/kokonutui",
+      "prefix": "kokonut",
+      "licensePath": "LICENSE",
+      "enabled": true,
+      "reviews": {
+        "background-paths.tsx": {
+          "name": "Kokonut UI · 光轨交互背景",
+          "category": "卡片",
+          "reason": "多层曲线随时间流动并避让鼠标，适合首屏和沉浸式展示区域。",
+          "demo": "import BackgroundPaths from \"./component\";export default function Demo(){return <div className=\"mx-auto w-full max-w-xl overflow-hidden rounded-2xl bg-neutral-950 text-white\"><BackgroundPaths className=\"h-80 min-h-0\" count={30}><div className=\"relative z-10 p-10\"><p className=\"text-xs tracking-widest text-cyan-300\">FOLLOW THE FLOW</p><h2 className=\"mt-4 text-4xl font-semibold\">每条路径，都有方向</h2></div></BackgroundPaths></div>}",
+          "css": ""
+        },
+        "glitch-text.tsx": {
+          "name": "Kokonut UI · 信号故障文字",
+          "category": "其他",
+          "reason": "鼠标触发文字分层错位和红青色差，形成明确的数字信号质感。",
+          "demo": "import GlitchText from \"./component\";export default function Demo(){return <div className=\"dark flex min-h-72 flex-col items-center justify-center rounded-2xl bg-neutral-950 p-8 text-white\"><GlitchText text=\"SIGNAL FOUND\" trigger=\"hover\" intensity=\"strong\" className=\"text-4xl font-semibold\"/><p className=\"mt-6 text-sm text-neutral-400\">将鼠标移到标题上，触发信号扰动</p></div>}",
+          "css": ""
+        }
+      },
+      "licenseSha256": "b2e018ad1fd564608cc1ee0c2ad675ce5202c8ed9f5f68e6d09e7b6bc881d5d2"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "repository": "magicuidesign/magicui",
+  "path": "apps/www/registry/magicui/border-beam.tsx",
+  "commit": "1ac985adca3cdfab9b1739253fd14209687c4e9c",
+  "lastModifiedCommit": "58ee1feebc504a660c00087b369da511e913477e",
+  "modifiedAt": "2026-07-31T11:41:14Z",
+  "collectedAt": "2026-11-10T00:24:35.883Z",
+  "selectionReason": "沿卡片轮廓移动的光束，为展示卡片提供有辨识度的动态边界。",
+  "adaptations": [
+    "附带演示与 Tailwind 3 兼容 CSS，原始源码保存在 upstream/"
+  ],
+  "policy": "curated-v1"
+}

@@ -132,7 +132,7 @@ try {
     .join("\n")
   const css = await postcss([
     tailwind({
-      content: doc.files.map((f) => ({
+      content: [...doc.files, { path: "__vault_demo.tsx", content: demo }].map((f) => ({
         raw: f.content,
         extension: path.extname(f.path).slice(1),
       })),

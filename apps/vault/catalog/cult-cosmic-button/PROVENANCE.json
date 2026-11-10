@@ -1,0 +1,13 @@
+{
+  "repository": "nolly-studio/cult-ui",
+  "path": "apps/www/registry/default/ui/cosmic-button.tsx",
+  "commit": "d71b1428b811c2779d46ea41b7ef8c9f9c9991c2",
+  "lastModifiedCommit": "9197839f337f6cce6879685fb567bdb9b85cb92f",
+  "modifiedAt": "2026-09-30T23:31:41Z",
+  "collectedAt": "2026-11-10T00:24:35.883Z",
+  "selectionReason": "双层反向旋转的光环边框与深色按钮表面形成清晰层次。",
+  "adaptations": [
+    "附带演示与 Tailwind 3 兼容 CSS，原始源码保存在 upstream/"
+  ],
+  "policy": "curated-v1"
+}

@@ -1,0 +1,13 @@
+{
+  "repository": "magicuidesign/magicui",
+  "path": "apps/www/registry/magicui/meteors.tsx",
+  "commit": "1ac985adca3cdfab9b1739253fd14209687c4e9c",
+  "lastModifiedCommit": "d12290d7199bd3c92a893c52c53f6d85de89820c",
+  "modifiedAt": "2026-03-06T10:09:15Z",
+  "collectedAt": "2026-11-10T00:24:35.883Z",
+  "selectionReason": "斜向流星划过暗色背景，具有明显空间层次和持续动态效果。",
+  "adaptations": [
+    "附带演示与 Tailwind 3 兼容 CSS，原始源码保存在 upstream/"
+  ],
+  "policy": "curated-v1"
+}

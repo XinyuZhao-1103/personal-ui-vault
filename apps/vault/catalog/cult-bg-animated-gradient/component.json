@@ -1,0 +1,26 @@
+{
+  "name": "Cult UI · 呼吸渐变背景",
+  "slug": "cult-bg-animated-gradient",
+  "description": "多组径向渐变在位置和色彩间平滑过渡，形成柔和的环境光背景。 来源 nolly-studio/cult-ui，源码最近更新 2026-09-30T23:31:41Z",
+  "category": "卡片",
+  "framework": "react",
+  "tags": [
+    "特色精选",
+    "cult",
+    "自动采集"
+  ],
+  "source": "https://github.com/nolly-studio/cult-ui/blob/d71b1428b811c2779d46ea41b7ef8c9f9c9991c2/apps/www/registry/default/ui/bg-animated-gradient.tsx",
+  "license": "MIT License\n\nCopyright (c) 2023 Jordan-Gilliam\n\nPermission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.\n",
+  "files": [
+    "component.tsx",
+    "lib/utils.ts",
+    "LICENSE.txt",
+    "upstream/component.tsx.txt",
+    "PROVENANCE.json"
+  ],
+  "entry": "component.tsx",
+  "demo": "import {GradientAnimation} from \"./component\";const gradients=[{centerX:10,centerY:20,stops:[{color:\"#312e81\",position:0},{color:\"#09090b\",position:80}]},{centerX:90,centerY:80,stops:[{color:\"#0e7490\",position:0},{color:\"#09090b\",position:80}]}];export default function Demo(){return <div className=\"relative mx-auto flex h-72 w-full max-w-lg items-center overflow-hidden rounded-2xl bg-neutral-950 p-10 text-white\"><GradientAnimation gradients={gradients} animationDuration={5}/><div className=\"relative\"><p className=\"text-xs tracking-widest\">ATMOSPHERE</p><h2 className=\"mt-4 text-4xl font-semibold\">让色彩呼吸</h2></div></div>}",
+  "dependencies": {
+    "motion": "12.23.24"
+  }
+}

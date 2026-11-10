@@ -64,3 +64,19 @@ node --env-file-if-exists=.env scripts/import-catalog.mjs --export
 - Vite 构建会提示忽略 React 组件中的 use client 模块指令，这是客户端示例的构建提示，构建正常完成。
 
 验收脚本为 `scripts/verify-catalog-browser.mjs`。截图、导出包及运行记录保存在本机 `work/catalog-verification`，未纳入源码提交。
+
+## 特色精选补采（2026-11-10）
+
+增加 8 个独立演示，目录总数为 18。新增 Cult UI 与 Kokonut UI 两个 MIT 来源，完整来源快照、修改时间及许可见各目录的 `PROVENANCE.json`、`upstream/` 和 `LICENSE.txt`。
+
+| 来源 | 本轮样本 |
+|---|---|
+| Magic UI | 流光边框卡片、轨道环绕导航、流星背景卡片 |
+| Cult UI | 宇宙光环按钮、呼吸渐变背景、方向感知选项卡 |
+| Kokonut UI | 光轨交互背景、信号故障文字 |
+
+本轮按视觉特征与完整演示筛选，不以星数或最近修改时间替代组件质量。React Bits 当前许可限制组件本身再分发，未纳入源码导出目录。缺少键盘交互的展开面板候选本轮未收录。
+
+自动采集策略见 `sync-policy.json`。每天检查，默认每来源最多新增 3 个，允许零新增。未列入精选清单的组件需补充筛选说明、演示和浏览器验收后才能自动发布。已有组件按原规则去重跳过，历史日期保留真实值。
+
+新增样本完成真实来源读取、隔离编译、Edge 渲染及截图检查，方向选项卡切换与故障文字 hover 已验证。Tailwind 4 特有样式通过附带 CSS 兼容现有 Tailwind 3 预览和导出示例，原始源码独立保留。另修复服务端预览未扫描 demo 样式的问题。证据与源码导出包保存在本机 `work/quality`，不纳入 Git。

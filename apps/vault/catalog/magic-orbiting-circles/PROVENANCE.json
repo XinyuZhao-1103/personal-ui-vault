@@ -1,0 +1,13 @@
+{
+  "repository": "magicuidesign/magicui",
+  "path": "apps/www/registry/magicui/orbiting-circles.tsx",
+  "commit": "1ac985adca3cdfab9b1739253fd14209687c4e9c",
+  "lastModifiedCommit": "d12290d7199bd3c92a893c52c53f6d85de89820c",
+  "modifiedAt": "2026-03-06T10:09:15Z",
+  "collectedAt": "2026-11-10T00:24:35.883Z",
+  "selectionReason": "多个图标沿同心轨道运动，适合展示工具生态与集成关系。",
+  "adaptations": [
+    "附带演示与 Tailwind 3 兼容 CSS，原始源码保存在 upstream/"
+  ],
+  "policy": "curated-v1"
+}

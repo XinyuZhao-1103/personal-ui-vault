@@ -1,0 +1,27 @@
+{
+  "name": "Cult UI · 方向感知选项卡",
+  "slug": "cult-direction-aware-tabs",
+  "description": "内容根据切换方向滑入，容器高度随内容平滑变化，适合分步介绍。 来源 nolly-studio/cult-ui，源码最近更新 2026-09-30T23:31:41Z",
+  "category": "导航",
+  "framework": "react",
+  "tags": [
+    "特色精选",
+    "cult",
+    "自动采集"
+  ],
+  "source": "https://github.com/nolly-studio/cult-ui/blob/d71b1428b811c2779d46ea41b7ef8c9f9c9991c2/apps/www/registry/default/ui/direction-aware-tabs.tsx",
+  "license": "MIT License\n\nCopyright (c) 2023 Jordan-Gilliam\n\nPermission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.\n",
+  "files": [
+    "component.tsx",
+    "lib/utils.ts",
+    "LICENSE.txt",
+    "upstream/component.tsx.txt",
+    "PROVENANCE.json"
+  ],
+  "entry": "component.tsx",
+  "demo": "import {DirectionAwareTabs} from \"./component\";const tabs=[{id:0,label:\"发现\",content:<div className=\"p-5\"><h3 className=\"text-xl font-semibold\">收集有辨识度的设计</h3><p className=\"mt-3\">从交互和视觉细节开始。</p></div>},{id:1,label:\"整理\",content:<div className=\"p-5\"><h3 className=\"text-xl font-semibold\">把灵感整理成资产</h3><p className=\"mt-3\">保留来源、演示与版本。</p></div>},{id:2,label:\"复用\",content:<div className=\"p-5\"><h3 className=\"text-xl font-semibold\">带到下一个项目</h3><p className=\"mt-3\">选择组件，导出完整源码。</p></div>}];export default function Demo(){return <div className=\"mx-auto w-full max-w-lg rounded-2xl bg-stone-100 p-6\"><DirectionAwareTabs tabs={tabs}/></div>}",
+  "dependencies": {
+    "motion": "12.23.24",
+    "react-use-measure": "2.1.7"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "repository": "kokonut-labs/kokonutui",
+  "path": "components/kokonutui/glitch-text.tsx",
+  "commit": "9976111a38abe05a47229867611db02646b597ef",
+  "lastModifiedCommit": "5d616b948149abc8c45ccb1598a78ac687b15154",
+  "modifiedAt": "2026-10-14T08:29:23Z",
+  "collectedAt": "2026-11-10T00:24:35.883Z",
+  "selectionReason": "鼠标触发文字分层错位和红青色差，形成明确的数字信号质感。",
+  "adaptations": [
+    "补充独立演示，保留原始源码"
+  ],
+  "policy": "curated-v1"
+}

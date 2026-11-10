@@ -1,0 +1,27 @@
+{
+  "name": "Magic UI · 流光边框卡片",
+  "slug": "magic-border-beam",
+  "description": "沿卡片轮廓移动的光束，为展示卡片提供有辨识度的动态边界。 来源 magicuidesign/magicui，源码最近更新 2026-07-31T11:41:14Z",
+  "category": "卡片",
+  "framework": "react",
+  "tags": [
+    "特色精选",
+    "magic",
+    "自动采集"
+  ],
+  "source": "https://github.com/magicuidesign/magicui/blob/1ac985adca3cdfab9b1739253fd14209687c4e9c/apps/www/registry/magicui/border-beam.tsx",
+  "license": "MIT License\n\nCopyright (c) Magic UI\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n",
+  "files": [
+    "component.tsx",
+    "lib/utils.ts",
+    "preview.css",
+    "LICENSE.txt",
+    "upstream/component.tsx.txt",
+    "PROVENANCE.json"
+  ],
+  "entry": "component.tsx",
+  "demo": "import {BorderBeam} from \"./component\";export default function Demo(){return <div className=\"relative mx-auto flex h-64 w-full max-w-md flex-col justify-center overflow-hidden rounded-2xl border bg-neutral-950 p-8 text-white\"><p className=\"text-xs uppercase tracking-widest text-cyan-300\">LIGHT IN MOTION</p><h2 className=\"mt-4 text-3xl font-semibold\">让边界流动起来</h2><p className=\"mt-3 text-neutral-400\">适用于产品展示与重点功能卡片。</p><BorderBeam size={180} duration={6}/></div>}",
+  "dependencies": {
+    "motion": "12.23.24"
+  }
+}

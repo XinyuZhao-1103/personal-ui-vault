@@ -1,0 +1,24 @@
+{
+  "name": "Kokonut UI · 信号故障文字",
+  "slug": "kokonut-glitch-text",
+  "description": "鼠标触发文字分层错位和红青色差，形成明确的数字信号质感。 来源 kokonut-labs/kokonutui，源码最近更新 2026-10-14T08:29:23Z",
+  "category": "其他",
+  "framework": "react",
+  "tags": [
+    "特色精选",
+    "kokonut",
+    "自动采集"
+  ],
+  "source": "https://github.com/kokonut-labs/kokonutui/blob/9976111a38abe05a47229867611db02646b597ef/components/kokonutui/glitch-text.tsx",
+  "license": "MIT License\n\nCopyright (c) 2025 kokonutUI\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n",
+  "files": [
+    "component.tsx",
+    "lib/utils.ts",
+    "LICENSE.txt",
+    "upstream/component.tsx.txt",
+    "PROVENANCE.json"
+  ],
+  "entry": "component.tsx",
+  "demo": "import GlitchText from \"./component\";export default function Demo(){return <div className=\"dark flex min-h-72 flex-col items-center justify-center rounded-2xl bg-neutral-950 p-8 text-white\"><GlitchText text=\"SIGNAL FOUND\" trigger=\"hover\" intensity=\"strong\" className=\"text-4xl font-semibold\"/><p className=\"mt-6 text-sm text-neutral-400\">将鼠标移到标题上，触发信号扰动</p></div>}",
+  "dependencies": {}
+}

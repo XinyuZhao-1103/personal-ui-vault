@@ -1,0 +1,24 @@
+{
+  "name": "Kokonut UI · 光轨交互背景",
+  "slug": "kokonut-background-paths",
+  "description": "多层曲线随时间流动并避让鼠标，适合首屏和沉浸式展示区域。 来源 kokonut-labs/kokonutui，源码最近更新 2026-10-22T17:10:32Z",
+  "category": "卡片",
+  "framework": "react",
+  "tags": [
+    "特色精选",
+    "kokonut",
+    "自动采集"
+  ],
+  "source": "https://github.com/kokonut-labs/kokonutui/blob/9976111a38abe05a47229867611db02646b597ef/components/kokonutui/background-paths.tsx",
+  "license": "MIT License\n\nCopyright (c) 2025 kokonutUI\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n",
+  "files": [
+    "component.tsx",
+    "lib/utils.ts",
+    "LICENSE.txt",
+    "upstream/component.tsx.txt",
+    "PROVENANCE.json"
+  ],
+  "entry": "component.tsx",
+  "demo": "import BackgroundPaths from \"./component\";export default function Demo(){return <div className=\"mx-auto w-full max-w-xl overflow-hidden rounded-2xl bg-neutral-950 text-white\"><BackgroundPaths className=\"h-80 min-h-0\" count={30}><div className=\"relative z-10 p-10\"><p className=\"text-xs tracking-widest text-cyan-300\">FOLLOW THE FLOW</p><h2 className=\"mt-4 text-4xl font-semibold\">每条路径，都有方向</h2></div></BackgroundPaths></div>}",
+  "dependencies": {}
+}

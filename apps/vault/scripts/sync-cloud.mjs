@@ -98,5 +98,6 @@ while (discovery.candidateIds.length && processed < maxAttempts) {
 const readback = await api("/api/sync/status")
 await browser.close()
 const shortfall = Object.fromEntries(Object.entries(targets).map(([repository, target]) => [repository, Math.max(0, target - importedBySource[repository])]))
-console.log(JSON.stringify({ processed, imported, importedBySource, skipped, failed, shortfall, sources: discovery.sources, latestRun: readback.runs[0]?.id }))
-if (sourceFailures || Object.values(shortfall).some(remaining => remaining > 0)) process.exitCode = 1
+console.log(JSON.stringify({ processed, imported, importedBySource, skipped, failed, remainingCapacity: shortfall, sources: discovery.sources, latestRun: readback.runs[0]?.id }))
+// 精选数量不足允许成功，依赖故障、预览失败和验证预算耗尽仍须显式失败。
+if (sourceFailures || failed || (processed >= maxAttempts && discovery.candidateIds.some(id => !attempted.includes(id)))) process.exitCode = 1
