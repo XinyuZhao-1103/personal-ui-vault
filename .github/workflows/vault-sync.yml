@@ -26,7 +26,7 @@ jobs:
       - run: npm ci
       - run: node scripts/build-parser.mjs
       - run: google-chrome --version
-      - name: 发现新组件、验证预览并保存待筛选候选
+      - name: 发现新组件、隔离验证并自动入库
         run: node scripts/sync-cloud.mjs
         env:
           VAULT_SITE_URL: ${{ vars.VAULT_SITE_URL }}

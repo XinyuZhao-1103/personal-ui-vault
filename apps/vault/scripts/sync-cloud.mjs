@@ -16,14 +16,14 @@ async function api(path, method = "GET", body) {
   if (!response.ok) throw new Error(`${path} HTTP ${response.status} ${value.error || "请求失败"}`)
   return value
 }
-// 每日维护只写候选区，由管理员在网页确认后入库。
+// 每日维护经过隔离编译和浏览器验证后直接入库。
 const discovery = await api("/api/sync/run", "POST", { githubToken: process.env.GITHUB_TOKEN })
 console.log(JSON.stringify({ event: "discovered", ...discovery }))
 let processed = 0
 let failed = 0
-let prepared = 0
+let imported = 0
 let skipped = 0
-const preparedBySource = Object.fromEntries(discovery.sources.map(source => [source.repository, 0]))
+const importedBySource = Object.fromEntries(discovery.sources.map(source => [source.repository, 0]))
 const attempted = []
 const sourceFailures = discovery.failures.length
 const demos = {
@@ -77,14 +77,14 @@ if (discovery.candidateIds.length) {
       document.demo ||= demos[document.slug] || ""
       const html = await makePreview(document, 30000)
       await verifyPreview(html)
-      const result = await api("/api/sync/prepare", "POST", { candidateId: candidate.id, document, previewGzip: gzipSync(html).toString("base64") })
-      if (result.status === "prepared") {
-        prepared++
-        preparedBySource[candidate.id.split(":")[0]]++
+      const result = await api("/api/sync/publish", "POST", { candidateId: candidate.id, document, previewGzip: gzipSync(html).toString("base64") })
+      if (result.status === "imported") {
+        imported++
+        importedBySource[candidate.id.split(":")[0]]++
       }
       else skipped++
       // 正常读取入口校验已写入的版本，服务更新边界另提供读回工具。
-      console.log(JSON.stringify({ event: "prepared", slug: document.slug, ...result }))
+      console.log(JSON.stringify({ event: "published", slug: document.slug, ...result }))
     } catch (error) {
       failed++
       await api("/api/sync/reject", "POST", { candidateId: candidate.id, reason: error.message.slice(0, 1000) })
@@ -94,8 +94,8 @@ if (discovery.candidateIds.length) {
 }
 await browser.close()
 const unprocessed = discovery.candidateIds.filter(id => !attempted.includes(id)).length
-await api("/api/sync/report", "POST", { runId: discovery.runId, processed, prepared, failed, sourceFailures, skipped, unprocessed })
+await api("/api/sync/report", "POST", { runId: discovery.runId, processed, prepared: 0, imported, failed, sourceFailures, skipped, unprocessed })
 const readback = await api("/api/sync/status")
-console.log(JSON.stringify({ processed, prepared, preparedBySource, skipped, failed, sources: discovery.sources, latestRun: readback.runs[0]?.id }))
+console.log(JSON.stringify({ processed, imported, importedBySource, skipped, failed, sources: discovery.sources, latestRun: readback.runs[0]?.id }))
 // 候选数量不足允许成功，依赖故障、预览失败和验证预算耗尽仍须显式失败。
 if (sourceFailures || failed || unprocessed) process.exitCode = 1
