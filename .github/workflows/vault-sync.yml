@@ -2,8 +2,10 @@ name: UI 组件定时维护
 on:
   workflow_dispatch:
   schedule:
-    # UTC 00:00 对应北京时间 08:00，GitHub 排队可能造成延迟。
-    - cron: '0 0 * * *'
+    # UTC 00:07 对应北京时间 08:07，避开整点高峰，GitHub 排队仍可能延迟。
+    - cron: '7 0 * * *'
+    # 临时定时触发验收，验收后移除。
+    - cron: '13 4 11 11 *'
 permissions:
   contents: read
 concurrency:
@@ -26,7 +28,7 @@ jobs:
       - run: npm ci
       - run: node scripts/build-parser.mjs
       - run: google-chrome --version
-      - name: 采集、隔离编译并写入组件库
+      - name: 发现新组件、验证预览并保存待筛选候选
         run: node scripts/sync-cloud.mjs
         env:
           VAULT_SITE_URL: ${{ vars.VAULT_SITE_URL }}

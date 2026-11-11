@@ -16,17 +16,16 @@ async function api(path, method = "GET", body) {
   if (!response.ok) throw new Error(`${path} HTTP ${response.status} ${value.error || "请求失败"}`)
   return value
 }
-console.log(JSON.stringify({ event: "bootstrap", ...await api("/api/catalog/bootstrap", "POST", {}) }))
-let discovery = await api("/api/sync/run", "POST", { githubToken: process.env.GITHUB_TOKEN })
+// 每日维护只写候选区，由管理员在网页确认后入库。
+const discovery = await api("/api/sync/run", "POST", { githubToken: process.env.GITHUB_TOKEN })
 console.log(JSON.stringify({ event: "discovered", ...discovery }))
 let processed = 0
 let failed = 0
-let imported = 0
+let prepared = 0
 let skipped = 0
-const importedBySource = Object.fromEntries(discovery.sources.map(source => [source.repository, 0]))
-const targets = Object.fromEntries(discovery.sources.map(source => [source.repository, source.target]))
+const preparedBySource = Object.fromEntries(discovery.sources.map(source => [source.repository, 0]))
 const attempted = []
-let sourceFailures = discovery.failures.length
+const sourceFailures = discovery.failures.length
 const demos = {
   "magic-animated-circular-progress-bar": 'import {AnimatedCircularProgressBar} from "./component";export default function Demo(){return <AnimatedCircularProgressBar max={100} min={0} value={65} gaugePrimaryColor="#171717" gaugeSecondaryColor="#e5e5e5"/>}',
   "motion-infinite-slider": 'import {InfiniteSlider} from "./component";export default function Demo(){return <InfiniteSlider><div className="rounded-xl bg-neutral-100 p-8">设计</div><div className="rounded-xl bg-neutral-900 p-8 text-white">组件</div><div className="rounded-xl bg-neutral-100 p-8">复用</div></InfiniteSlider>}',
@@ -55,9 +54,12 @@ async function verifyPreview(html) {
   } finally { await page.close() }
 }
 // 只处理本轮按新到旧选择的候选，旧积压不占各来源的名额。
-while (discovery.candidateIds.length && processed < maxAttempts) {
-  const query = new URLSearchParams(discovery.candidateIds.map(id => ["id", id]))
-  const { items } = await api(`/api/sync/candidates?${query}`)
+if (discovery.candidateIds.length) {
+  const items = []
+  for (let offset = 0; offset < discovery.candidateIds.length; offset += 10) {
+    const query = new URLSearchParams(discovery.candidateIds.slice(offset, offset + 10).map(id => ["id", id]))
+    items.push(...(await api(`/api/sync/candidates?${query}`)).items)
+  }
   if (items.length !== discovery.candidateIds.length) throw new Error("本轮候选读取不完整，请检查同步状态")
   for (const candidate of items) {
     if (processed >= maxAttempts) break
@@ -75,29 +77,25 @@ while (discovery.candidateIds.length && processed < maxAttempts) {
       document.demo ||= demos[document.slug] || ""
       const html = await makePreview(document, 30000)
       await verifyPreview(html)
-      const result = await api("/api/sync/publish", "POST", { candidateId: candidate.id, document, previewGzip: gzipSync(html).toString("base64") })
-      if (result.status === "imported") {
-        imported++
-        importedBySource[candidate.id.split(":")[0]]++
+      const result = await api("/api/sync/prepare", "POST", { candidateId: candidate.id, document, previewGzip: gzipSync(html).toString("base64") })
+      if (result.status === "prepared") {
+        prepared++
+        preparedBySource[candidate.id.split(":")[0]]++
       }
       else skipped++
       // 正常读取入口校验已写入的版本，服务更新边界另提供读回工具。
-      console.log(JSON.stringify({ event: "published", slug: document.slug, ...result }))
+      console.log(JSON.stringify({ event: "prepared", slug: document.slug, ...result }))
     } catch (error) {
       failed++
       await api("/api/sync/reject", "POST", { candidateId: candidate.id, reason: error.message.slice(0, 1000) })
       console.error(JSON.stringify({ event: "candidate_failed", candidate: candidate.id, error: error.message }))
     }
   }
-  const sourceLimits = Object.fromEntries(Object.entries(targets).map(([repository, target]) => [repository, Math.max(0, target - importedBySource[repository])]))
-  if (processed >= maxAttempts || Object.values(sourceLimits).every(remaining => remaining === 0)) break
-  discovery = await api("/api/sync/run", "POST", { githubToken: process.env.GITHUB_TOKEN, sourceLimits, excludeCandidateIds: attempted })
-  sourceFailures += discovery.failures.length
-  console.log(JSON.stringify({ event: "refill", ...discovery }))
 }
-const readback = await api("/api/sync/status")
 await browser.close()
-const shortfall = Object.fromEntries(Object.entries(targets).map(([repository, target]) => [repository, Math.max(0, target - importedBySource[repository])]))
-console.log(JSON.stringify({ processed, imported, importedBySource, skipped, failed, remainingCapacity: shortfall, sources: discovery.sources, latestRun: readback.runs[0]?.id }))
-// 精选数量不足允许成功，依赖故障、预览失败和验证预算耗尽仍须显式失败。
-if (sourceFailures || failed || (processed >= maxAttempts && discovery.candidateIds.some(id => !attempted.includes(id)))) process.exitCode = 1
+const unprocessed = discovery.candidateIds.filter(id => !attempted.includes(id)).length
+await api("/api/sync/report", "POST", { runId: discovery.runId, processed, prepared, failed, sourceFailures, skipped, unprocessed })
+const readback = await api("/api/sync/status")
+console.log(JSON.stringify({ processed, prepared, preparedBySource, skipped, failed, sources: discovery.sources, latestRun: readback.runs[0]?.id }))
+// 候选数量不足允许成功，依赖故障、预览失败和验证预算耗尽仍须显式失败。
+if (sourceFailures || failed || unprocessed) process.exitCode = 1
