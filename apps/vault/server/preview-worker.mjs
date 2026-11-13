@@ -5,6 +5,7 @@ import { build } from "esbuild"
 import postcss from "postcss"
 import tailwind from "tailwindcss"
 import { resolveFile } from "./model.mjs"
+import { materializeRegistryStyles } from "./registry-styles.mjs"
 
 const root = fileURLToPath(new URL("../", import.meta.url))
 const allowed = new Set([
@@ -17,6 +18,8 @@ const allowed = new Set([
   "class-variance-authority",
   "@radix-ui/react-slot",
   "react-use-measure",
+  "@base-ui/react",
+  "@radix-ui/react-popover",
 ])
 const colors = Object.fromEntries(
   [
@@ -41,7 +44,7 @@ const colors = Object.fromEntries(
   ]),
 )
 try {
-  const doc = workerData
+  const doc = await materializeRegistryStyles(workerData)
   const files = Object.fromEntries(doc.files.map((f) => [f.path, f]))
   const utility =
     'import { clsx } from "clsx"; import { twMerge } from "tailwind-merge"; export function cn(...values) { return twMerge(clsx(values)); }'
@@ -130,7 +133,7 @@ try {
     .filter((f) => f.path.endsWith(".css"))
     .map((f) => f.content)
     .join("\n")
-  const css = await postcss([
+  const css = doc.files.some(file => file.path === "upstream/tailwind-v4.css.txt") ? { css: rawCss } : await postcss([
     tailwind({
       content: [...doc.files, { path: "__vault_demo.tsx", content: demo }].map((f) => ({
         raw: f.content,

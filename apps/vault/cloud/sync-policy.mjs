@@ -11,6 +11,16 @@ const reviewSchema = z.object({
 })
 const sourceSchema = z.object({
   repository: z.string().regex(/^[\w.-]+\/[\w.-]+$/),
+  displayName: z.string().min(1).max(100).optional(),
+  registry: z.object({
+    url: z.string().url().startsWith("https://"),
+    namespace: z.string().regex(/^@[a-z0-9-]+$/),
+    importPrefix: z.string().min(1),
+    installedPrefix: z.string().min(1),
+    preservePaths: z.boolean().default(false),
+    theme: z.string().max(30000).default(""),
+    themePath: safePath.optional(),
+  }).optional(),
   directory: safePath,
   prefix: z.string().regex(/^[a-z][a-z0-9-]*$/),
   licensePath: safePath,

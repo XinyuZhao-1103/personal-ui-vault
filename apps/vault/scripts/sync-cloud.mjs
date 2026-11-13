@@ -2,6 +2,8 @@ import { gzipSync } from "node:zlib"
 import { makePreview } from "../server/preview.mjs"
 import { validateComponent } from "../server/model.mjs"
 import { chromium } from "@playwright/test"
+import { materializeRegistryStyles } from "../server/registry-styles.mjs"
+import { syncPolicy } from "../cloud/sync-policy.mjs"
 
 const origin = new URL(process.env.VAULT_SITE_URL).origin
 const token = process.env.VAULT_SITE_SERVICE_TOKEN
@@ -17,6 +19,8 @@ async function api(path, method = "GET", body) {
   return value
 }
 // 每日维护经过隔离编译和浏览器验证后直接入库。
+const prefixes = syncPolicy.sources.filter(source => source.enabled && source.registry).map(source => source.prefix)
+if (prefixes.length) console.log(JSON.stringify({ event: "catalog_bootstrap", ...await api("/api/catalog/bootstrap", "POST", { prefixes }) }))
 const discovery = await api("/api/sync/run", "POST", { githubToken: process.env.GITHUB_TOKEN })
 console.log(JSON.stringify({ event: "discovered", ...discovery }))
 let processed = 0
@@ -66,7 +70,7 @@ if (discovery.candidateIds.length) {
     processed++
     attempted.push(candidate.id)
     try {
-      const document = validateComponent(JSON.parse(candidate.document), 1048576)
+      const document = await materializeRegistryStyles(validateComponent(JSON.parse(candidate.document), 1048576))
       // shadcn 源仓库以工作区包 cn 提供工具函数，导出包使用现有本地工具文件。
       if (candidate.id.startsWith("shadcn-ui/ui:")) {
         document.files = document.files.map(file => file.path === "component.tsx" ? { ...file, content: file.content.replace(/from (["'])cn\1/g, 'from "@/lib/utils"') } : file)

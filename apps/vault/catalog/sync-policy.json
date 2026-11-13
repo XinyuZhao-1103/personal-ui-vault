@@ -1,6 +1,53 @@
 {
   "sources": [
     {
+      "repository": "educlopez/smoothui",
+      "displayName": "Smooth UI",
+      "directory": "apps/docs/examples",
+      "prefix": "smooth",
+      "licensePath": "LICENSE",
+      "licenseSha256": "9877f4310c0549e5ce26affe52ba97c4e60325472bdcdd308a92fccd90f119cc",
+      "enabled": true,
+      "reviews": {
+        "siri-orb.tsx": { "name": "Smooth UI · 语音状态光球", "category": "反馈", "reason": "以流动光球展示聆听、思考与输出状态，保留官方振幅驱动和状态动效。", "demo": "import {useState} from 'react';import SiriOrb from '@/components/smoothui/siri-orb';export default function Demo(){const[state,setState]=useState('listening');return <div className='flex min-h-72 flex-col items-center justify-center gap-6'><SiriOrb size='160px' state={state}/><div className='flex gap-2'>{[['listening','聆听'],['thinking','思考'],['streaming','输出']].map(([value,label])=><button className='rounded-full border px-4 py-2 text-sm' key={value} onClick={()=>setState(value)} aria-pressed={state===value}>{label}</button>)}</div><p role='status'>{state}</p></div>}" },
+        "rich-popover.tsx": { "name": "Smooth UI · 富内容信息浮层", "category": "卡片", "reason": "带标题、说明和操作反馈的信息浮层，展示完整触发器、浮层与动画依赖。", "demo": "import {useState} from 'react';import RichPopover from '@/components/smoothui/rich-popover';export default function Demo(){const[status,setStatus]=useState('');return <div className='flex min-h-80 flex-col items-center justify-center gap-5'><RichPopover title='设计组件库' description='将交互、样式与源码完整保留，随时带到下一个项目。' meta='5 个新组件' actionLabel='查看详情' onActionClick={()=>setStatus('已查看详情')} trigger={<button className='rounded-xl border bg-white px-6 py-3 shadow-sm'>查看组件信息</button>}/><p role='status'>{status}</p></div>}" },
+        "float-input.tsx": { "name": "Smooth UI · 浮动标签输入框", "category": "表单", "reason": "输入与聚焦时标签平滑上移，演示受控输入、图标和实时反馈。", "demo": "import {useState} from 'react';import FloatInput from '@/components/smoothui/float-input';import {Mail} from 'lucide-react';export default function Demo(){const[value,setValue]=useState('');return <div className='mx-auto grid min-h-64 w-full max-w-sm content-center gap-6 p-6'><FloatInput label='联系邮箱' placeholder='输入邮箱地址' icon={<Mail size={16}/>} value={value} onChange={setValue}/><p className='text-sm text-muted-foreground' role='status'>{value||'留下你的联系方式'}</p></div>}" },
+        "dot-morph-button.tsx": { "name": "Smooth UI · 圆点形变按钮", "category": "按钮", "reason": "悬停时圆点形变，保留触摸设备与减少动态效果适配，并演示点击反馈。", "demo": "import {useState} from 'react';import DotMorphButton from '@/components/smoothui/dot-morph-button';export default function Demo(){const[count,setCount]=useState(0);return <div className='flex min-h-64 flex-col items-center justify-center gap-6'><DotMorphButton label='开始探索' onClick={()=>setCount(count+1)}/><p role='status'>已点击 {count} 次</p></div>}" },
+        "button-copy.tsx": { "name": "Smooth UI · 异步操作反馈按钮", "category": "按钮", "reason": "展示按钮从等待到成功的动态图标切换，演示回调提供可观察的状态反馈。", "demo": "import {useState} from 'react';import ButtonCopy from '@/components/smoothui/button-copy';export default function Demo(){const[done,setDone]=useState(false);return <div className='flex min-h-64 flex-col items-center justify-center gap-5'><p className='text-sm text-muted-foreground'>点击体验异步操作反馈</p><ButtonCopy loadingDuration={300} onCopy={()=>setDone(true)}/><p role='status'>{done?'回调执行成功':'等待操作'}</p></div>}" }
+      },
+      "registry": {
+        "url": "https://smoothui.dev/r/{name}.json",
+        "namespace": "@smoothui",
+        "importPrefix": "@repo/smoothui/components/",
+        "installedPrefix": "@/components/smoothui/",
+        "preservePaths": false
+      }
+    },
+    {
+      "repository": "cosscom/ui",
+      "displayName": "coss ui",
+      "directory": "apps/ui/registry/default/particles",
+      "prefix": "coss",
+      "licensePath": "LICENSE",
+      "licenseSha256": "c5fd4e7b2b9cc46c144299257369d50ad025fda76e7d731928c7301810c02227",
+      "enabled": true,
+      "reviews": {
+        "p-tabs-1.tsx": { "name": "coss ui · 滑动指示器选项卡", "category": "导航", "reason": "完整分段选项卡示例，保留指示器运动、键盘导航与内容切换。", "demo": "import Example from './example';export default function Demo(){return <div className='mx-auto flex min-h-64 max-w-md items-center justify-center p-6'><Example/></div>}" },
+        "p-accordion-2.tsx": { "name": "coss ui · 多项折叠面板", "category": "导航", "reason": "完整折叠面板示例，包含展开内容、图标反馈和键盘交互。", "demo": "import Example from './example';export default function Demo(){return <div className='mx-auto w-full max-w-lg p-6'><Example/></div>}" },
+        "p-switch-4.tsx": { "name": "coss ui · 设置开关", "category": "表单", "reason": "使用真实设置场景展示开关及关联标签，保留选中态和无障碍交互。", "demo": "import Example from './example';export default function Demo(){return <div className='mx-auto flex min-h-64 w-full max-w-md items-center justify-center p-6'><Example/></div>}" },
+        "p-input-group-7.tsx": { "name": "coss ui · 组合输入框", "category": "表单", "reason": "组合输入框完整示例，保留附加内容、对齐、焦点与输入行为。", "demo": "import Example from './example';export default function Demo(){return <div className='mx-auto grid min-h-64 w-full max-w-md content-center p-6'><Example/></div>}" },
+        "p-dialog-1.tsx": { "name": "coss ui · 资料编辑弹窗", "category": "反馈", "reason": "可编辑表单弹窗，包含打开、输入、关闭和焦点管理的完整依赖。", "demo": "import Example from './example';export default function Demo(){return <div className='flex min-h-72 items-center justify-center'><Example/></div>}" }
+      },
+      "registry": {
+        "url": "https://raw.githubusercontent.com/cosscom/ui/{commit}/apps/ui/public/r/{name}.json",
+        "namespace": "@coss",
+        "importPrefix": "@/registry/default/ui/",
+        "installedPrefix": "@/registry/default/ui/",
+        "preservePaths": true,
+        "themePath": "packages/ui/src/styles/globals.css"
+      }
+    },
+    {
       "repository": "shadcn-ui/ui",
       "directory": "apps/v4/registry/new-york-v4/ui",
       "prefix": "shadcn",
